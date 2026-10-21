@@ -30,14 +30,12 @@ var BILL=R("bill","Preferred Billing Model",["Prepaid","Postpaid"]);
 
 var FORMS={
 whatsapp:{tab:"WhatsApp",color:"#25d366",title:"WhatsApp Business API (WABA) Onboarding Questionnaire",secs:[
- ["Business Information",[F("email","Email","email",{auto:"email"}),F("co","Company / Business Name"),F("reg","Registered Business Name (as per legal documents)"),F("web","Business Website","url"),F("pc","Primary Business Contact Name"),F("mob","Mobile Number","tel",{auto:"tel"})]],
  ["Meta Business Account",[R("bm","Does the client already have a Meta Business Manager (Business Portfolio)?",YN),F("bmid","If Yes, please share the Business Manager (BM) ID","text",{show:is("bm","Yes")}),R("ver","Is the Meta Business Manager Business Verified?",["Yes","No","Under Review"]),R("adm","Does the client have Admin access to the Business Manager?",YN),R("fbp","Does the client have a Facebook Business Page?",YN),F("fbu","If Yes, please share the Facebook Page URL","url",{show:is("fbp","Yes")})]],
  ["WhatsApp Business Details",[R("waba","Does the client already have a WhatsApp Business Account (WABA)?",YN),R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"]),F("wan","WhatsApp Business Number","tel"),R("host","Is the WhatsApp number currently hosted with another BSP?",YN),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:is("host","Yes")}),F("bspo","If \"Other\" BSP, please specify","text",{show:is("bsp","Other")}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN)]],
  ["Messaging Requirements",[C("mt","What type of messages does the client want to send?",["Marketing","Utility","Authentication (OTP)"])]],
  ["SMS / RCS Fallback",[R("f1","What should be the first fallback?",["SMS","RCS","Fallback not needed"]),R("f2","What should be the second fallback?",["RCS","SMS","Fallback not needed"])]],
  ["Commercial Information",[BILL]]]},
 sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
- ["Business Information",[F("email","Email","email",{auto:"email"}),F("co","Company / Business Name"),F("reg","Registered Business Name"),F("pc","Primary Contact Name"),F("mob","Mobile Number","tel",{auto:"tel"})]],
  ["DLT Registration",[R("dlt","Is the business registered on the DLT platform?",YN),F("pe","Principal Entity (PE) ID","text",{show:is("dlt","Yes")}),S("op","Which DLT operator is the business registered with?",["Airtel","Jio","Vodafone Idea (Vi)","BSNL","Smart Ping"])]],
  ["Sender ID (Header)",[R("has","Does the client already have approved Sender IDs (Headers)?",YN),F("sid","If yes, please provide the Sender ID(s) (Numeric & alphabetical both)","text",{show:is("has","Yes"),full:1}),F("ns","How many Sender IDs are required?","number")]],
  ["Messaging Requirements",[C("st","What type of SMS will be sent?",["OTP","Transactional","Promotional"])]],
@@ -45,7 +43,6 @@ sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
  ["Fallback & Multi-Channel Communication",[R("f1","What should be the first fallback?",["WhatsApp","RCS","Fallback not needed"]),R("f2","What should be the second fallback?",["RCS","WhatsApp","Fallback not needed"])]],
  ["Commercial Information",[F("go","Expected Go-Live Date","date"),BILL]]]},
 rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Questionnaire",secs:[
- ["Basic Information",[F("email","Email","email",{auto:"email"}),F("sn","SPOC Name","text",{hint:"This will be used for RCS Activation LOA"}),F("sd","SPOC Designation","text",{hint:"This will be used for RCS Activation LOA"}),F("sm","SPOC Mobile Number","tel",{hint:"This will be used for RCS Activation LOA",auto:"tel"})]],
  ["Brand Information",[F("bn","Brand Name to be displayed on RCS"),F("ln","Legal Name of the Brand"),C("uc","Intended use case for RCS messaging",["Promotional","Transactional","OTP"]),F("an","Agent Name (Display Name)"),F("ad","Agent Description","textarea"),F("lg","Agent Logo","imglink",{kind:"logo",title:"Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)"}),F("hr","Hero Image / Banner","imglink",{kind:"hero",title:"Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)"}),F("bc","Brand Colors (Hex Code)","hex",{hint:"For example #00B9F5"})]],
  ["Contact Information",[F("cp","Customer Support Phone Number","tel"),F("cpl","Display Label for Phone Number"),F("ce","Customer Support Email","email"),F("cel","Display Label for Email"),F("cw","Business Website URL","url"),F("cwl","Display Label for Website")]],
  ["Customer Consent (Opt-in)",[F("cons","How do you obtain customer consent before sending RCS messages?","textarea")]],
@@ -55,6 +52,17 @@ rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Question
  ["Commercial Information",[BILL]]]}
 };
 var ORDER=["whatsapp","sms","rcs"];
+/* Business information is entered once and sent with every channel. BI_MAP says which Google Form question each answer fills. */
+var BI_DEF={title:"Business Information",specs:[
+ F("email","Email","email",{auto:"email"}),F("co","Company / Business Name","text",{auto:"organization"}),
+ F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"}),
+ F("pc","Primary Contact Name","text",{auto:"name"}),F("des","Designation","text",{hint:"Used for RCS activation (LOA)",auto:"organization-title"}),
+ F("mob","Mobile Number","tel",{auto:"tel"})]};
+var BI_MAP={
+ whatsapp:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
+ sms:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
+ rcs:{email:"emailAddress",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
+};
 
 /* ---------- Validation ---------- */
 var URLRE=/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
@@ -79,7 +87,8 @@ function check(s,v){
 }
 
 /* ---------- Build UI ---------- */
-var tabs=$("#tabs"),panels=$("#panels"),state={},active="";
+var tabs=$("#tabs"),panels=$("#panels"),state={},active="",unlocked=false,submitted={};
+try{submitted=JSON.parse(sessionStorage.getItem("pi_onboarding_done_v1")||"{}")}catch(e){}
 function fieldHTML(key,s){
  var id=key+"-"+s.id,lab=esc(s.label)+'<span class="req" aria-hidden="true"> *</span>',
   hint=s.hint?'<p class="hint" id="'+id+'-h">'+esc(s.hint)+'</p>':"",
@@ -113,7 +122,7 @@ function build(key){
  var def=FORMS[key],specs=[],by={},secs=[];
  def.secs.forEach(function(sc){var list=sc[1];secs.push({t:sc[0],specs:list});list.forEach(function(s){specs.push(s);by[s.id]=s})});
  var map={};Object.keys(ENTRY[key]||{}).forEach(function(k){map[norm(k)]=ENTRY[key][k]});
- var html='<div class="formhead"><h2>'+esc(def.title)+'</h2><p><span class="req-note">*</span> All fields are required.</p></div>'+
+ var html='<div class="formhead"><h2>'+esc(def.title)+'</h2><p><span class="req-note">*</span> All fields are required. <span class="binote">Your business information from Step 1 is included automatically.</span></p></div>'+
   '<form novalidate data-key="'+key+'" id="panel-'+key+'" role="tabpanel" aria-labelledby="tab-'+key+'" hidden>'+
   secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3><div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
   '<div class="notice" role="alert" id="n-'+key+'">We could not submit your form right now. Please try again in a few minutes.</div>'+
@@ -123,10 +132,7 @@ function build(key){
  panels.appendChild(wrap);
  var F_={key:key,el:$("form",wrap),box:wrap,specs:specs,by:by,secs:secs,map:map};
  state[key]=F_;
- F_.el.addEventListener("input",function(){refresh(F_);saveSoon(F_)});
- F_.el.addEventListener("change",function(){refresh(F_);saveSoon(F_)});
- F_.el.addEventListener("focusout",function(e){var w=e.target.closest&&e.target.closest("[data-id]");if(!w||w.classList.contains("hide"))return;var s=by[w.dataset.id];
-  if(s.type==="radio"||s.type==="check")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
+ wireCommon(F_);
  F_.el.addEventListener("submit",function(e){submit(F_,e)});
  wireImages(F_);
  $("[data-clear]",wrap).addEventListener("click",function(){askClear(F_)});
@@ -134,7 +140,7 @@ function build(key){
  F_.el.hidden=false;
  var b=document.createElement("button");
  b.className="tab";b.type="button";b.setAttribute("role","tab");b.id="tab-"+key;b.style.setProperty("--c",def.color);b.setAttribute("aria-controls","panel-"+key);
- b.innerHTML="<i></i>"+esc(def.tab);b.addEventListener("click",function(){select(key)});
+ b.disabled=true;b.innerHTML="<i></i>"+esc(def.tab)+'<span class="tkd" aria-hidden="true"></span>';b.addEventListener("click",function(){select(key)});
  b.addEventListener("keydown",function(e){var i=ORDER.indexOf(key),n=e.key==="ArrowRight"?i+1:e.key==="ArrowLeft"?i-1:null;if(n===null)return;e.preventDefault();n=(n+3)%3;select(ORDER[n]);$("#tab-"+ORDER[n]).focus()});
  tabs.appendChild(b);
 }
@@ -149,20 +155,55 @@ function get(F_,s){
 }
 function vis(F_,s){return!s.show||s.show(function(id){return get(F_,F_.by[id])})}
 function setErr(w,m){w.classList.toggle("bad",!!m);$(".err",w).textContent=m;$$("input,select,textarea",w).forEach(function(c){m?c.setAttribute("aria-invalid","true"):c.removeAttribute("aria-invalid")})}
+function wireCommon(F_){
+ F_.el.addEventListener("input",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
+ F_.el.addEventListener("change",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
+ F_.el.addEventListener("focusout",function(e){var w=e.target.closest&&e.target.closest("[data-id]");if(!w||w.classList.contains("hide"))return;var s=F_.by[w.dataset.id];
+  if(s.type==="radio"||s.type==="check")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
+}
 function refresh(F_){
  F_.specs.forEach(function(s){if(!s.show)return;var w=wrapOf(F_,s),v=vis(F_,s);w.classList.toggle("hide",!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
- if(F_.key===active)paint(F_);
+ paint();
 }
-function paint(F_){
- var done=0,total=0,rows=F_.secs.map(function(sc){var ok=true;sc.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++;else ok=false});return'<li class="'+(ok?"ok":"")+'"><b></b>'+esc(sc.t)+'</li>'}).join("");
- var pct=total?Math.round(done/total*100):0;
+function stat(F_){var done=0,total=0;F_.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++});return{done:done,total:total}}
+function paint(){
+ if(!state.bi||!ORDER.every(function(k){return state[k]}))return;
+ var cur=unlocked?state[active]:state.bi,c=stat(cur),pct=c.total?Math.round(c.done/c.total*100):0;
  $("#bar").style.width=pct+"%";$("#meter").setAttribute("aria-valuenow",pct);
- $("#count").textContent=done+" of "+total+" fields completed";$("#chk").innerHTML=rows;
+ $("#count").textContent=(unlocked?FORMS[active].tab:"Business information")+": "+c.done+" of "+c.total+" fields completed";
+ var rows='<li class="'+(unlocked?"ok":"")+'"><b></b><span>Business information</span><em>'+(unlocked?"Complete":"In progress")+'</em></li>';
+ ORDER.forEach(function(k){var st=stat(state[k]),done=submitted[k],t=$("#tab-"+k);
+  rows+='<li class="'+(done?"ok":"")+'"><b></b><span>'+esc(FORMS[k].tab)+'</span><em>'+(done?"Submitted":unlocked?(st.done?st.done+" of "+st.total:"Not started"):"Locked")+'</em></li>';
+  if(t)t.classList.toggle("done",!!done)});
+ $("#chk").innerHTML=rows;
+}
+function biValid(){var B=state.bi;return B.specs.every(function(s){return check(s,get(B,s))===""})}
+function showActive(){ORDER.forEach(function(k){state[k].box.hidden=!(unlocked&&k===active)})}
+function gate(){
+ var ok=biValid();unlocked=ok;
+ $$("#tabs .tab").forEach(function(t){t.disabled=!ok;t.classList.toggle("locked",!ok);t.title=ok?"":"Complete Business information to unlock"});
+ $$(".tn button").forEach(function(b){b.classList.toggle("locked",!ok)});
+ $("#tabs").classList.toggle("locked",!ok);$("#step2").classList.toggle("locked",!ok);$("#lock").hidden=ok;
+ $("#bi").classList.toggle("done",ok);$("#bi-go").disabled=!ok;
+ var st=$("#bistat");st.textContent=ok?"Business information complete. Choose your channels below.":"Complete all fields to unlock the channels.";st.className="bistat"+(ok?" ok":"");
+ showActive();paint();
 }
 function select(key){
  active=key;try{localStorage.setItem("pi_onboarding_tab_v1",key)}catch(e){}$$(".tn button").forEach(function(b){b.setAttribute("aria-current",b.dataset.k===key)});
- ORDER.forEach(function(k){var on=k===key;state[k].box.hidden=!on;var t=$("#tab-"+k);t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1});
- refresh(state[key]);
+ ORDER.forEach(function(k){var on=k===key,t=$("#tab-"+k);t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1});
+ showActive();refresh(state[key]);
+}
+function buildBI(){
+ var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
+ host.innerHTML='<div class="formhead"><h2><span class="stepn" aria-hidden="true">1</span>Business information</h2><p><span class="req-note">*</span> All fields are required. These details are used for every channel you onboard.</p></div>'+
+  '<form novalidate id="bi-form"><div class="sec"><div class="grid">'+specs.map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'+
+  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="button" id="bi-go" disabled>Continue</button></div></form>';
+ var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:[{t:BI_DEF.title,specs:specs}],map:{}};
+ state.bi=F_;wireCommon(F_);
+ $("#bi-clear").addEventListener("click",function(){askClear(F_)});
+ $("#bi-go").addEventListener("click",function(){$("#step2").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});var t=$("#tab-"+active);if(t)t.focus({preventScroll:true})});
+ F_.el.addEventListener("submit",function(e){e.preventDefault()});
+ draftRestore(F_);
 }
 
 /* ---------- Image link / upload (RCS logo and banner) ---------- */
@@ -216,11 +257,11 @@ function draftRestore(F_){
   else if(typeof v==="string"){var c=$(".c",w);if(!c)return;if(s.type==="select"&&$$("option",c).every(function(op){return op.value!==v}))return;c.value=v}});
  refresh(F_);
 }
-function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});$("#n-"+F_.key).classList.remove("on");refresh(F_);draftClear(F_.key)}
-function askClear(F_){pendingKey=F_.key;var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
+function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");refresh(F_);draftClear(F_.key)}
+function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?"Your business information will be removed and the channels will be locked again. Your channel answers are kept.":"All the information you have entered in this form will be removed. This cannot be undone.";var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
 $("#cno").addEventListener("click",function(){closeDlg($("#clear"))});
-$("#cyes").addEventListener("click",function(){var F_=state[pendingKey];closeDlg($("#clear"));if(F_){resetForm(F_);F_.box.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})}});
+$("#cyes").addEventListener("click",function(){var F_=state[pendingKey];closeDlg($("#clear"));if(F_){resetForm(F_);if(F_.key==="bi")gate();F_.box.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})}});
 $("#clear").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
 
 /* ---------- Network helpers and loading overlay ---------- */
@@ -234,8 +275,9 @@ function busy(on){var b=$("#busy"),sl=$("#bslow");if(!b)return;clearTimeout(busy
  if(on){if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();busyT=setTimeout(function(){sl.hidden=false},8000)}}
 
 /* ---------- Send to a Google Sheet (through the Apps Script web app) ---------- */
-function sheetRecord(F_){var rec={};F_.specs.forEach(function(s){var shown=vis(F_,s),v=shown?get(F_,s):"N/A",
- k=s.id==="email"&&F_.specs[0].id==="email"?"Email Address":norm(s.title||s.label);rec[k]=Array.isArray(v)?v.join(", "):v});return rec}
+function sheetRecord(F_){var rec={},B=state.bi,bm=BI_MAP[F_.key]||{};
+ Object.keys(bm).forEach(function(id){var t=bm[id];rec[t==="emailAddress"?"Email Address":t]=get(B,B.by[id])});
+ F_.specs.forEach(function(s){var shown=vis(F_,s),v=shown?get(F_,s):"N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});return rec}
 function sendSheet(F_){
  if(!CFG.SHEET_URL)return Promise.reject(new Error("config"));
  return fetchT(CFG.SHEET_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({form:F_.key,data:sheetRecord(F_)})})
@@ -245,19 +287,23 @@ function sendSheet(F_){
 function submit(F_,e){
  e.preventDefault();
  var first=null,btn=$(".submit",F_.el),note=$("#n-"+F_.key);note.classList.remove("on");
+ var B=state.bi,bfirst=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!bfirst)bfirst=w});
+ if(bfirst){gate();bfirst.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var bc=$("input,select,textarea",bfirst);if(bc)bc.focus({preventScroll:true});return}
  F_.specs.forEach(function(s){var w=wrapOf(F_,s);if(!vis(F_,s)){setErr(w,"");return}var m=w.dataset.busy?"Please wait for the upload to finish.":check(s,get(F_,s));setErr(w,m);if(m&&!first)first=w});
  if(first){first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
 
  var toSheet=((CFG.TARGETS||{})[F_.key]||"form")==="sheet";
  var p=new URLSearchParams(),miss=[];
  F_.specs.forEach(function(s){
-  var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=s.id==="email"&&F_.specs[0].id==="email"?"emailAddress":F_.map[norm(s.title||s.label)];
+  var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=F_.map[norm(s.title||s.label)];
   if(!shown&&s.type==="select"){if(!HIDDEN_SELECT_VALUE)return;v=HIDDEN_SELECT_VALUE}
   if(!key){miss.push(s.label);return}
   if(s.type==="date"){var d=v.split("-");p.append(key+"_year",d[0]);p.append(key+"_month",d[1]);p.append(key+"_day",d[2])}
   else if(Array.isArray(v)){v.forEach(function(x){p.append(key,x)});p.append(key+"_sentinel","")}
   else p.append(key,v);
  });
+ var bmap=BI_MAP[F_.key]||{};
+ Object.keys(bmap).forEach(function(id){var t=bmap[id],k=t==="emailAddress"?"emailAddress":F_.map[norm(t)];if(!k){miss.push(t);return}p.append(k,get(B,B.by[id]))});
  p.append("fvv","1");p.append("pageHistory","0");
  btn.disabled=true;$(".lbl",btn).textContent="Submitting";if(!debug||toSheet)busy(true);
 
@@ -274,31 +320,36 @@ function submit(F_,e){
  else send=fetchT("https://docs.google.com/forms/d/e/"+FORM_IDS[F_.key]+"/formResponse",{method:"POST",mode:"no-cors",body:p});
 
  send.then(function(){
-  busy(false);lastKey=F_.key;draftClear(F_.key);
+  busy(false);lastKey=F_.key;draftClear(F_.key);submitted[F_.key]=1;try{sessionStorage.setItem("pi_onboarding_done_v1",JSON.stringify(submitted))}catch(e){}
+  var rem=ORDER.filter(function(k){return!submitted[k]}).map(function(k){return FORMS[k].tab}),dn=$("#dnote");dn.hidden=!rem.length;dn.textContent=rem.length?"You can also onboard on "+rem.join(" and ")+" using the same business information.":"";paint();
   var dlg=$("#done");typeof dlg.showModal==="function"?dlg.showModal():dlg.setAttribute("open","");$("#ok").focus();
  }).catch(function(err){busy(false);console.error("[Onboarding] submit failed:",err);var em=(err&&err.message)||"",code=(em==="config"?"CFG":em.indexOf("srv:")===0?"SRV-"+em.slice(4).toUpperCase():err&&err.name==="AbortError"?"TIMEOUT":err&&err.name==="SyntaxError"?"RESP":"NET")+"-"+F_.key.toUpperCase();note.textContent="We could not submit your form right now. Please try again in a few minutes. (Ref: "+code+")";note.classList.add("on");note.scrollIntoView({block:"center"})})
  .then(function(){busy(false);btn.disabled=false;$(".lbl",btn).textContent="Submit"});
 }
 
 /* ---------- Reset after confirmation ---------- */
-function resetAll(){if(!lastKey)return;var k=lastKey;lastKey="";resetForm(state[k]);select("whatsapp");window.scrollTo({top:0,behavior:"auto"})}
+function resetAll(){if(!lastKey)return;var k=lastKey;lastKey="";resetForm(state[k]);
+ var next=ORDER.filter(function(x){return!submitted[x]})[0];
+ if(next){select(next);$("#step2").scrollIntoView({behavior:"auto",block:"start"})}else window.scrollTo({top:0,behavior:"auto"});paint()}
 $("#ok").addEventListener("click",function(){var d=$("#done");d.close?d.close():d.removeAttribute("open");resetAll()});
 $("#done").addEventListener("close",resetAll);
 $("#done").addEventListener("click",function(e){if(e.target===this)this.close()});
 
 var sk=$("#sk");if(sk)sk.remove();tabs.innerHTML="";
+buildBI();
 ORDER.forEach(build);
-ORDER.forEach(function(k){var F_=state[k],m=F_.specs.filter(function(s){return!(s.id==="email"&&F_.specs[0].id==="email")&&!F_.map[norm(s.title||s.label)]}).map(function(s){return s.label});
- if(m.length&&!preview)console.warn("[Onboarding] "+FORMS[k].tab+" form: Google entry IDs missing for "+m.length+" field(s). Submissions will not be sent until they are added to ENTRY."+k,m)});
+ORDER.forEach(function(k){var F_=state[k],m=F_.specs.filter(function(s){return!F_.map[norm(s.title||s.label)]}).map(function(s){return s.label});
+ Object.keys(BI_MAP[k]).forEach(function(id){var t=BI_MAP[k][id];if(t!=="emailAddress"&&!F_.map[norm(t)])m.push(t)});
+ if(m.length&&!preview&&(CFG.TARGETS||{})[k]!=="sheet")console.warn("[Onboarding] "+FORMS[k].tab+" form: Google entry IDs missing for "+m.length+" field(s).",m)});
 var t0="whatsapp";try{var sv=localStorage.getItem("pi_onboarding_tab_v1");if(sv&&state[sv])t0=sv}catch(e){}
-select(t0);
+select(t0);gate();
 })();
 
 /* Header menu, logo, motion preference and one-time welcome dialog */
 (function(){
 "use strict";
 var LOGO_SRC=(window.PI_CONFIG&&window.PI_CONFIG.LOGO_SRC)||"";
-document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("click",function(){document.getElementById("tab-"+b.dataset.k).click();document.getElementById("tabs").scrollIntoView({behavior:"smooth",block:"center"})})});
+document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("click",function(){var t=document.getElementById("tab-"+b.dataset.k);if(t.disabled){document.getElementById("bi").scrollIntoView({behavior:"smooth",block:"start"});return}t.click();document.getElementById("tabs").scrollIntoView({behavior:"smooth",block:"center"})})});
 (function(){
  var l=document.getElementById("logo");
  if(LOGO_SRC){var i=new Image();i.alt="Pi by Paytm";i.onload=function(){l.removeAttribute("role");l.removeAttribute("aria-label");l.innerHTML="";l.appendChild(i)};i.src=LOGO_SRC}
@@ -309,7 +360,7 @@ document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("
  try{seen=localStorage.getItem(KEY)==="1"}catch(e){}
  if(seen)return;
  var d=document.getElementById("welcome");if(!d)return;
- function close(){if(d.close)d.close();else d.removeAttribute("open");var t=document.getElementById("tab-whatsapp");if(t)t.focus({preventScroll:true})}
+ function close(){if(d.close)d.close();else d.removeAttribute("open");}
  document.getElementById("wgo").addEventListener("click",close);
  d.addEventListener("click",function(e){if(e.target===d)close()});
  setTimeout(function(){
