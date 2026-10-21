@@ -30,11 +30,8 @@ var BILL=R("bill","Preferred Billing Model",["Prepaid","Postpaid"]);
 
 var FORMS={
 whatsapp:{tab:"WhatsApp",color:"#25d366",title:"WhatsApp Business API (WABA) Onboarding Questionnaire",secs:[
- ["Meta Business Account",[R("bm","Does the client already have a Meta Business Manager (Business Portfolio)?",YN),F("bmid","If Yes, please share the Business Manager (BM) ID","text",{show:is("bm","Yes")}),R("ver","Is the Meta Business Manager Business Verified?",["Yes","No","Under Review"]),R("adm","Does the client have Admin access to the Business Manager?",YN),R("fbp","Does the client have a Facebook Business Page?",YN),F("fbu","If Yes, please share the Facebook Page URL","url",{show:is("fbp","Yes")})]],
- ["WhatsApp Business Details",[R("waba","Does the client already have a WhatsApp Business Account (WABA)?",YN),R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"]),F("wan","WhatsApp Business Number","tel"),R("host","Is the WhatsApp number currently hosted with another BSP?",YN),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:is("host","Yes")}),F("bspo","If \"Other\" BSP, please specify","text",{show:is("bsp","Other")}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN)]],
- ["Messaging Requirements",[C("mt","What type of messages does the client want to send?",["Marketing","Utility","Authentication (OTP)"])]],
- ["SMS / RCS Fallback",[R("f1","What should be the first fallback?",["SMS","RCS","Fallback not needed"]),R("f2","What should be the second fallback?",["RCS","SMS","Fallback not needed"])]],
- ["Commercial Information",[BILL]]]},
+ ["Meta Business Account",[F("bmid","Business Manager (BM) ID","text",{title:"If Yes, please share the Business Manager (BM) ID"}),F("fbu","Facebook Page URL","url",{title:"If Yes, please share the Facebook Page URL"}),F("adm","Admin access","ack",{title:"Does the client have Admin access to the Business Manager?",note:"The SPOC must have full admin access to the Meta Business Manager at the time of onboarding. Without it, we cannot complete the setup.",ackLabel:"I confirm the SPOC will have full admin access"})]],
+ ["WhatsApp Business Details",[R("waba","Does the client already have a WhatsApp Business Account (WABA)?",YN),R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"]),F("wan","WhatsApp Business Number","tel"),R("host","Is the WhatsApp number currently hosted with another BSP?",YN),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:is("host","Yes")}),F("bspo","If \"Other\" BSP, please specify","text",{show:is("host","Yes"),enable:is("bsp","Other")}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN)]]]},
 sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
  ["DLT Registration",[R("dlt","Is the business registered on the DLT platform?",YN),F("pe","Principal Entity (PE) ID","text",{show:is("dlt","Yes")}),S("op","Which DLT operator is the business registered with?",["Airtel","Jio","Vodafone Idea (Vi)","BSNL","Smart Ping"])]],
  ["Sender ID (Header)",[R("has","Does the client already have approved Sender IDs (Headers)?",YN),F("sid","If yes, please provide the Sender ID(s) (Numeric & alphabetical both)","text",{show:is("has","Yes"),full:1}),F("ns","How many Sender IDs are required?","number")]],
@@ -53,11 +50,11 @@ rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Question
 };
 var ORDER=["whatsapp","sms","rcs"];
 /* Business information is entered once and sent with every channel. BI_MAP says which Google Form question each answer fills. */
-var BI_DEF={title:"Business Information",specs:[
- F("email","Email","email",{auto:"email"}),F("co","Company / Business Name","text",{auto:"organization"}),
- F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"}),
- F("pc","Primary Contact Name","text",{auto:"name"}),F("des","Designation","text",{hint:"Used for RCS activation (LOA)",auto:"organization-title"}),
- F("mob","Mobile Number","tel",{auto:"tel"})]};
+var BI_DEF={title:"Business Information",groups:[
+ ["SPOC details",[F("pc","Name","text",{hint:"SPOC Name",auto:"name"}),F("email","Email","email",{hint:"SPOC Email",auto:"email"}),
+  F("mob","Contact Number","tel",{hint:"SPOC Contact Number",auto:"tel"}),F("des","Designation","text",{hint:"SPOC Designation",auto:"organization-title"})]],
+ ["Business details",[F("co","Company / Business Name","text",{auto:"organization"}),F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"})]]]};
+BI_DEF.specs=[].concat.apply([],BI_DEF.groups.map(function(g){return g[1]}));
 var BI_MAP={
  whatsapp:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
  sms:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
@@ -68,7 +65,7 @@ var BI_MAP={
 var URLRE=/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
 function check(s,v){
  var empty=Array.isArray(v)?!v.length:!v;
- if(empty)return s.type==="imglink"?(s._mode==="upload"?"Please upload a JPG or JPEG image.":"Paste an image link or upload a JPG or JPEG image."):s.type==="check"?"Select at least one option.":s.type==="radio"?"Please select an option.":s.type==="select"?"Please choose an option.":"This field is required.";
+ if(empty)return s.type==="ack"?"Please confirm to continue.":s.type==="imglink"?(s._mode==="upload"?"Please upload a JPG or JPEG image.":"Paste an image link or upload a JPG or JPEG image."):s.type==="check"?"Select at least one option.":s.type==="radio"?"Please select an option.":s.type==="select"?"Please choose an option.":"This field is required.";
  switch(s.type){
   case"email":return/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)?"":"Enter a valid email address.";
   case"tel":var d=v.replace(/\D/g,"");return/^\+?[\d\s-]+$/.test(v)&&d.length>=10&&d.length<=15?"":"Enter a valid mobile number (10 to 15 digits).";
@@ -106,6 +103,10 @@ function fieldHTML(key,s){
    '<div class="up" hidden><label class="pick" for="'+id+'-f"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><span>Choose a JPG or JPEG image</span><input id="'+id+'-f" type="file" accept=".jpg,.jpeg,image/jpeg"></label>'+
    '<div class="fi" hidden><img alt="Selected image preview"><span class="fn"></span><button type="button" class="rm">Remove</button></div><p class="st" aria-live="polite"></p></div>'+err+'</div>';
  }
+ if(s.type==="ack"){
+  return'<div class="f full" data-id="'+s.id+'"><div class="callout" role="note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg><div><strong>Admin access is mandatory</strong><p>'+esc(s.note)+'</p></div></div>'+
+   '<label class="opt ack"><input type="checkbox" name="'+s.id+'" aria-describedby="'+id+'-e"><span>'+esc(s.ackLabel)+'</span></label>'+err+'</div>';
+ }
  var full=s.type==="textarea"||s.type==="phones"||s.full||s.label.length>58,
   dby=' aria-describedby="'+(s.hint?id+'-h ':"")+id+'-e"',ctl;
  if(s.type==="select")ctl='<select class="c" id="'+id+'" name="'+s.id+'"'+dby+'><option value="">Choose</option>'+s.opts.map(function(o){return'<option>'+esc(o)+'</option>'}).join("")+'</select>';
@@ -114,7 +115,7 @@ function fieldHTML(key,s){
   var it=s.type==="email"?"email":s.type==="tel"?"tel":s.type==="date"?"date":"text",
    im=s.type==="url"?' inputmode="url"':s.type==="number"?' inputmode="numeric"':"",
    mn=s.type==="date"?' min="'+today+'"':"",ac=s.auto?' autocomplete="'+s.auto+'"':' autocomplete="off"';
-  ctl='<input class="c" id="'+id+'" name="'+s.id+'" type="'+it+'"'+im+mn+ac+(it==='text'?' maxlength="300"':'')+dby+'>';
+  ctl='<input class="c" id="'+id+'" name="'+s.id+'" type="'+it+'"'+im+mn+ac+(it==='text'?' maxlength="300"':'')+(s.enable?' placeholder="Only needed if you select Other"':'')+dby+'>';
  }
  return'<div class="f'+(full?" full":"")+'" data-id="'+s.id+'"><label for="'+id+'">'+lab+'</label>'+hint+ctl+err+'</div>';
 }
@@ -151,18 +152,20 @@ function get(F_,s){
  var w=wrapOf(F_,s);
  if(s.type==="radio"){var c=$("input:checked",w);return c?c.value:""}
  if(s.type==="check")return $$("input:checked",w).map(function(i){return i.value});
+ if(s.type==="ack")return $("input",w).checked?"Yes":"";
  return $(".c",w).value.trim();
 }
-function vis(F_,s){return!s.show||s.show(function(id){return get(F_,F_.by[id])})}
+function vis(F_,s){var g=function(id){return get(F_,F_.by[id])};return(!s.show||s.show(g))&&(!s.enable||s.enable(g))}
+function shown(F_,s){return!s.show||s.show(function(id){return get(F_,F_.by[id])})}
 function setErr(w,m){w.classList.toggle("bad",!!m);$(".err",w).textContent=m;$$("input,select,textarea",w).forEach(function(c){m?c.setAttribute("aria-invalid","true"):c.removeAttribute("aria-invalid")})}
 function wireCommon(F_){
  F_.el.addEventListener("input",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("change",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("focusout",function(e){var w=e.target.closest&&e.target.closest("[data-id]");if(!w||w.classList.contains("hide"))return;var s=F_.by[w.dataset.id];
-  if(s.type==="radio"||s.type==="check")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
+  if(s.type==="radio"||s.type==="check"||s.type==="ack")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
 }
 function refresh(F_){
- F_.specs.forEach(function(s){if(!s.show)return;var w=wrapOf(F_,s),v=vis(F_,s);w.classList.toggle("hide",!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
+ F_.specs.forEach(function(s){if(!s.show&&!s.enable)return;var w=wrapOf(F_,s),sh=shown(F_,s),v=vis(F_,s);w.classList.toggle("hide",!sh);w.classList.toggle("off",sh&&!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
  paint();
 }
 function stat(F_){var done=0,total=0;F_.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++});return{done:done,total:total}}
@@ -196,9 +199,9 @@ function select(key){
 function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
  host.innerHTML='<div class="formhead"><h2><span class="stepn" aria-hidden="true">1</span>Business information</h2><p><span class="req-note">*</span> All fields are required. These details are used for every channel you onboard.</p></div>'+
-  '<form novalidate id="bi-form"><div class="sec"><div class="grid">'+specs.map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'+
+  '<form novalidate id="bi-form">'+BI_DEF.groups.map(function(g){return'<div class="sec"><h3>'+esc(g[0])+'</h3><div class="grid">'+g[1].map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
   '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="button" id="bi-go" disabled>Continue</button></div></form>';
- var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:[{t:BI_DEF.title,specs:specs}],map:{}};
+ var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:BI_DEF.groups.map(function(g){return{t:g[0],specs:g[1]}}),map:{}};
  state.bi=F_;wireCommon(F_);
  $("#bi-clear").addEventListener("click",function(){askClear(F_)});
  $("#bi-go").addEventListener("click",function(){$("#step2").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});var t=$("#tab-"+active);if(t)t.focus({preventScroll:true})});
@@ -254,6 +257,7 @@ function draftRestore(F_){
   else if(s.type==="check")$$("input",w).forEach(function(i){i.checked=Array.isArray(v)&&v.indexOf(i.value)>-1});
   else if(s.type==="imglink"){imgSet(F_,s,w,v.m==="upload"?"upload":"link");
    if(v.v){$(".c",w).value=v.v;if(v.m==="upload"){$(".fn",w).textContent=v.n||"Uploaded image";$(".fi img",w).hidden=true;$(".fi",w).hidden=false;var st=$(".st",w);st.textContent="Uploaded";st.className="st ok"}}}
+  else if(s.type==="ack")$("input",w).checked=v==="Yes";
   else if(typeof v==="string"){var c=$(".c",w);if(!c)return;if(s.type==="select"&&$$("option",c).every(function(op){return op.value!==v}))return;c.value=v}});
  refresh(F_);
 }
@@ -277,7 +281,8 @@ function busy(on){var b=$("#busy"),sl=$("#bslow");if(!b)return;clearTimeout(busy
 /* ---------- Send to a Google Sheet (through the Apps Script web app) ---------- */
 function sheetRecord(F_){var rec={},B=state.bi,bm=BI_MAP[F_.key]||{};
  Object.keys(bm).forEach(function(id){var t=bm[id];rec[t==="emailAddress"?"Email Address":t]=get(B,B.by[id])});
- F_.specs.forEach(function(s){var shown=vis(F_,s),v=shown?get(F_,s):"N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});return rec}
+ F_.specs.forEach(function(s){var on=vis(F_,s),v=on?get(F_,s):"N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});
+ (CFG.NA_ANSWERS&&CFG.NA_ANSWERS[F_.key]||[]).forEach(function(t){rec[norm(t)]=CFG.NA_VALUE||"N/A"});return rec}
 function sendSheet(F_){
  if(!CFG.SHEET_URL)return Promise.reject(new Error("config"));
  return fetchT(CFG.SHEET_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({form:F_.key,data:sheetRecord(F_)})})
@@ -304,6 +309,7 @@ function submit(F_,e){
  });
  var bmap=BI_MAP[F_.key]||{};
  Object.keys(bmap).forEach(function(id){var t=bmap[id],k=t==="emailAddress"?"emailAddress":F_.map[norm(t)];if(!k){miss.push(t);return}p.append(k,get(B,B.by[id]))});
+ (CFG.NA_ANSWERS&&CFG.NA_ANSWERS[F_.key]||[]).forEach(function(t){var k=F_.map[norm(t)];if(k)p.append(k,CFG.NA_VALUE||"N/A")});
  p.append("fvv","1");p.append("pageHistory","0");
  btn.disabled=true;$(".lbl",btn).textContent="Submitting";if(!debug||toSheet)busy(true);
 
