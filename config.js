@@ -20,6 +20,23 @@ window.PI_CONFIG = {
  rcs: {"SPOC Name": "entry.1118606435", "SPOC Designation": "entry.1679670574", "SPOC Mobile Number": "entry.485470669", "Brand Name to be displayed on RCS": "entry.1635592091", "Legal Name of the Brand": "entry.154482033", "Intended use case for RCS messaging": "entry.132707126", "Agent Name (Display Name)": "entry.1095739474", "Agent Description": "entry.696298638", "Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)": "entry.795667415", "Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)": "entry.1858772363", "Brand Colors (Hex Code)": "entry.1819416538", "Customer Support Phone Number": "entry.1219833206", "Display Label for Phone Number": "entry.769174957", "Customer Support Email": "entry.146806301", "Display Label for Email": "entry.2061627988", "Business Website URL": "entry.801131581", "Display Label for Website": "entry.1694530686", "How do you obtain customer consent before sending RCS messages?": "entry.1642769548", "Privacy Policy URL": "entry.1420652932", "Terms & Conditions URL": "entry.492840082", "Please provide 5-10 RCS-enabled mobile numbers for testing": "entry.418580433", "Expected Go-Live Date": "entry.702577441", "What should be the first fallback?": "entry.782590551", "What should be the second fallback?": "entry.1175554073", "Preferred Billing Model": "entry.661321868"}
 },
 
+  /* Questions that were removed from a page but still exist in its Google Form. Their answer is sent as NA_VALUE.
+     In the Google Form, each of these radio / checkbox questions must either be set to "Optional" or have an
+     "N/A" choice added (exact text), otherwise Google rejects the response. If you delete a question from the
+     Google Form, you can delete it from this list too. */
+  NA_VALUE: "N/A",
+  NA_ANSWERS: {
+    whatsapp: [
+      "Does the client already have a Meta Business Manager (Business Portfolio)?",
+      "Is the Meta Business Manager Business Verified?",
+      "Does the client have a Facebook Business Page?",
+      "What type of messages does the client want to send?",
+      "What should be the first fallback?",
+      "What should be the second fallback?",
+      "Preferred Billing Model"
+    ]
+  },
+
   /* If a dropdown that only appears after a "Yes" answer is REQUIRED in the Google Form
      (WhatsApp: "If Yes, who is the current BSP?"), Google rejects the response when it is hidden.
      Best fix: make that question optional in Google Forms. Alternative: add an option such as
