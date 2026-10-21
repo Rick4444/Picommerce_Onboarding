@@ -59,8 +59,8 @@ select.c{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='h
 .actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding-top:24px;border-top:1px solid var(--line)}
 .submit{appearance:none;border:0;cursor:pointer;font:700 1rem var(--body);color:#fff;background:var(--navy);padding:15px 38px;border-radius:12px;min-width:170px;display:inline-flex;justify-content:center;align-items:center;gap:10px;transition:background .2s,transform .2s}
 .submit:hover{background:#0a4aa6;transform:translateY(-1px)}
-.submit[disabled]{opacity:.7;cursor:progress;transform:none}
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none}.submit[disabled] .spin{display:block}
+.submit[disabled]{opacity:.5;cursor:not-allowed;transform:none}.submit.sending[disabled]{opacity:.85;cursor:progress}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:none}.submit.sending .spin{display:block}
 @keyframes sp{to{transform:rotate(360deg)}}
 .small{font-size:.84rem;color:var(--muted)}
 
@@ -193,7 +193,7 @@ img,svg,video{max-width:100%}
 .bi{transition:border-color .3s,box-shadow .3s}.bi.done{border-color:#bfe6d1;box-shadow:0 0 0 3px rgba(20,160,90,.08)}
 .bi form{padding-bottom:24px}
 .bi .actions{margin-top:26px}.bi .actions{flex-wrap:nowrap}.bistat{flex:1;min-width:0;font-size:.9rem;line-height:1.4;color:var(--muted)}.bi .actions .clear,.bi .actions .submit{flex:none}.bistat.ok{color:var(--ok);font-weight:600}
-.bi .submit{min-width:150px}.bi .submit[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.bi .submit{min-width:150px}
 .stephead{display:flex;align-items:flex-start;gap:14px;margin:8px 0 -6px}
 .stephead h2{font:700 1.25rem var(--head);letter-spacing:-.02em;margin:0}.stephead p{margin:2px 0 0 0;color:var(--muted);font-size:.93rem}
 .stephead .stepn{margin-top:1px}.stephead.locked .stepn{background:#9fb1d3}
