@@ -33,6 +33,16 @@ All files sit in one folder (repository root or `/docs`).
 - `UPLOAD_URL`: address of the RCS image-upload script. Empty means clients can still paste a link.
 - `ENABLE_TEST_MODES`: keep `false` on the live site.
 
+## How the form works
+
+1. **Business information** (Step 1) is filled in once: email, company name, registered name, website, contact name,
+   designation and mobile number. The WhatsApp, SMS and RCS tabs stay locked until every field is valid.
+2. **Channels** (Step 2): once unlocked, the client can complete one, two or all of WhatsApp, SMS and RCS.
+   Each channel is submitted separately to its own Google Form, and the business information is added to it automatically.
+   A submitted channel shows a tick; the progress panel shows the status of every step.
+3. Which business answer fills which Google Form question is set in `BI_MAP` in `app.js`
+   (for RCS: contact name and mobile become "SPOC Name" and "SPOC Mobile Number", designation becomes "SPOC Designation").
+
 ## Behaviour
 
 - All visible fields are required, with format checks (email, phone, links, hex colour, dates, 5-10 RCS test numbers).
