@@ -13,9 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1.4.0">
-<script src="config.js?v=1.4.0" defer></script>
-<script src="app.js?v=1.4.0" defer></script>
+<link rel="stylesheet" href="styles.css?v=2.0.0">
+<script src="config.js?v=2.0.0" defer></script>
+<script src="app.js?v=2.0.0" defer></script>
 </head>
 <body>
 <noscript><div style="padding:16px;text-align:center;background:#fff3cd;color:#664d03;font:16px system-ui,sans-serif">Please enable JavaScript to use the onboarding form.</div></noscript>
@@ -29,7 +29,7 @@
  <div class="intro">
   <span class="live"><i></i>Onboarding open</span>
   <h1>Welcome to Paytm Intelligence</h1>
-  <p>To get started, please fill in the form below. Choose the channel you want to onboard on.</p>
+  <p>To get started, please fill in your business information below. Once complete, you can onboard on WhatsApp, SMS and RCS.</p>
  </div>
  <div class="art" aria-hidden="true">
   <svg class="scene" viewBox="0 0 320 320" focusable="false">
@@ -48,12 +48,16 @@
 </div></div>
 
 <main id="main"><div class="wrap">
- <div class="tabs" role="tablist" aria-label="Onboarding channel" id="tabs"><span class="tab-sk"></span><span class="tab-sk"></span><span class="tab-sk"></span></div>
- <div class="layout" style="margin-top:24px">
-  <div class="card" id="panels" aria-live="polite"><div class="sk" id="sk" role="status"><span class="sr">Loading the onboarding form</span><i class="t"></i><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div></div></div>
+ <div class="layout">
+  <div class="col">
+   <section class="card bi" id="bi" aria-label="Business information"><div class="sk" id="sk" role="status"><span class="sr">Loading the onboarding form</span><i class="t"></i><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div></div></section>
+   <div class="stephead locked" id="step2"><span class="stepn" aria-hidden="true">2</span><div><h2>Choose your channels</h2><p>Complete one or more. Your business information is added automatically.</p></div></div>
+   <div class="tabs locked" role="tablist" aria-label="Onboarding channel" id="tabs"><span class="tab-sk"></span><span class="tab-sk"></span><span class="tab-sk"></span></div>
+   <div class="card" id="panels"><div class="lock" id="lock"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg><h3>Channels are locked</h3><p>Complete the business information above to unlock WhatsApp, SMS and RCS.</p></div></div>
+  </div>
   <aside aria-label="Progress and next steps">
    <div class="card prog"><h4>Your progress</h4><div class="meter" role="progressbar" aria-label="Form completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><i id="bar"></i></div><p class="count" id="count" aria-live="polite"></p><ul class="chk hm" id="chk" style="margin-top:16px"></ul></div>
-   <div class="card hm"><h4>What happens next</h4><ol class="flow"><li><b>Submit your form</b>All fields are required.</li><li><b>We review your details</b>The Paytm Intelligence team checks your request.</li><li><b>We get back to you</b>You will hear from us by email.</li></ol></div>
+   <div class="card hm"><h4>What happens next</h4><ol class="flow"><li><b>Add business information</b>Entered once and used for every channel.</li><li><b>Complete your channels</b>Submit one, two or all of WhatsApp, SMS and RCS.</li><li><b>We get back to you</b>You will hear from us by email.</li></ol></div>
   </aside>
  </div>
 </div></main>
@@ -65,9 +69,9 @@
  <h2 id="wt">Welcome to Paytm Intelligence</h2>
  <p>We appreciate your interest in working with us. To begin onboarding, please complete the questionnaire for your preferred messaging channel.</p>
  <ol class="wsteps">
-  <li><b>1</b><span><strong>Select your channel</strong><small>WhatsApp, SMS or RCS</small></span></li>
-  <li><b>2</b><span><strong>Complete the questionnaire</strong><small>Please provide all of the required information</small></span></li>
-  <li><b>3</b><span><strong>Submit for review</strong><small>Our onboarding team will review your submission and contact you shortly</small></span></li>
+  <li><b>1</b><span><strong>Enter your business information</strong><small>Entered once and shared across all channels</small></span></li>
+  <li><b>2</b><span><strong>Complete your channels</strong><small>WhatsApp, SMS and RCS: submit all of them, or only the ones you need</small></span></li>
+  <li><b>3</b><span><strong>We get back to you</strong><small>Our onboarding team will review your submission and contact you shortly</small></span></li>
  </ol>
  <button class="submit" id="wgo" type="button">Begin onboarding</button>
 </div></dialog>
@@ -87,6 +91,7 @@
  <div class="tick"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#14a05a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 17.5l6.5 6.5L26 11"/></svg></div>
  <h2 id="dt">Thank you for your submission</h2>
  <p>We have received your onboarding request. Our team will review your details and get back to you shortly.</p>
+ <p class="dnote" id="dnote" hidden></p>
  <button class="submit" id="ok" type="button">OK</button>
 </div></dialog>
 </body>
