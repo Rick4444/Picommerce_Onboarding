@@ -50,6 +50,15 @@ fallbacks or billing model. Because they still exist in the WhatsApp Google Form
 (`NA_ANSWERS` in `config.js`). In the Google Form, set each of those questions to **Optional**, or add an **N/A** choice
 to it, otherwise Google rejects the response. Admin access is now a required confirmation tick box and is sent as `Yes`.
 
+## Unlocking and submitting
+
+- The channel tabs unlock only when the client clicks **Continue** on the business information and every field passes validation.
+- Each channel's **Submit** button stays disabled until every required field is complete (including the BSP dropdown and the
+  "Other" box when they apply). A counter next to it shows how many required fields are left.
+- Nothing is pre-selected; drafts saved in the browser bring back only what the client entered earlier (use Clear form to remove them).
+- **Account Manager Name** (sub-label "Paytm Sales SPOC Name") is collected for every channel. To store it, add a short-answer
+  question titled exactly `Account Manager Name` to each Google Form and add its entry ID to that form's map in `config.js`.
+
 ## Behaviour
 
 - All visible fields are required, with format checks (email, phone, links, hex colour, dates, 5-10 RCS test numbers).
