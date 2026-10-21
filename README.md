@@ -43,6 +43,13 @@ All files sit in one folder (repository root or `/docs`).
 3. Which business answer fills which Google Form question is set in `BI_MAP` in `app.js`
    (for RCS: contact name and mobile become "SPOC Name" and "SPOC Mobile Number", designation becomes "SPOC Designation").
 
+## WhatsApp questions removed from the page
+
+The page no longer asks for the Meta Business Manager yes/no, "Business Verified", Facebook Page yes/no, message type,
+fallbacks or billing model. Because they still exist in the WhatsApp Google Form, the page sends `N/A` for them
+(`NA_ANSWERS` in `config.js`). In the Google Form, set each of those questions to **Optional**, or add an **N/A** choice
+to it, otherwise Google rejects the response. Admin access is now a required confirmation tick box and is sent as `Yes`.
+
 ## Behaviour
 
 - All visible fields are required, with format checks (email, phone, links, hex colour, dates, 5-10 RCS test numbers).
