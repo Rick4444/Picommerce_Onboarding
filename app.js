@@ -53,12 +53,12 @@ var ORDER=["whatsapp","sms","rcs"];
 var BI_DEF={title:"Business Information",groups:[
  ["SPOC details",[F("pc","Name","text",{hint:"SPOC Name",auto:"name"}),F("email","Email","email",{hint:"SPOC Email",auto:"email"}),
   F("mob","Contact Number","tel",{hint:"SPOC Contact Number",auto:"tel"}),F("des","Designation","text",{hint:"SPOC Designation",auto:"organization-title"})]],
- ["Business details",[F("co","Company / Business Name","text",{auto:"organization"}),F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"})]]]};
+ ["Business details",[F("co","Company / Business Name","text",{auto:"organization"}),F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"}),F("am","Account Manager Name","text",{hint:"Paytm Sales SPOC Name",auto:"off"})]]]};
 BI_DEF.specs=[].concat.apply([],BI_DEF.groups.map(function(g){return g[1]}));
 var BI_MAP={
- whatsapp:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
- sms:{email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
- rcs:{email:"emailAddress",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
+ whatsapp:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
+ sms:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
+ rcs:{am:"Account Manager Name",email:"emailAddress",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
 };
 
 /* ---------- Validation ---------- */
@@ -84,7 +84,8 @@ function check(s,v){
 }
 
 /* ---------- Build UI ---------- */
-var tabs=$("#tabs"),panels=$("#panels"),state={},active="",unlocked=false,submitted={};
+var tabs=$("#tabs"),panels=$("#panels"),state={},active="",unlocked=false,confirmed=false,submitted={},BIOK="pi_onboarding_bi_ok_v1";
+try{confirmed=localStorage.getItem(BIOK)==="1"}catch(e){}
 try{submitted=JSON.parse(sessionStorage.getItem("pi_onboarding_done_v1")||"{}")}catch(e){}
 function fieldHTML(key,s){
  var id=key+"-"+s.id,lab=esc(s.label)+'<span class="req" aria-hidden="true"> *</span>',
@@ -92,7 +93,7 @@ function fieldHTML(key,s){
   err='<p class="err" id="'+id+'-e" role="alert"></p>';
  if(s.type==="radio"||s.type==="check"){
   var t=s.type==="radio"?"radio":"checkbox";
-  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" name="'+s.id+'" value="'+esc(o)+'"><span>'+esc(o)+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
+  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" autocomplete="off" name="'+s.id+'" value="'+esc(o)+'"><span>'+esc(o)+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
  }
 
  if(s.type==="imglink"){
@@ -109,7 +110,7 @@ function fieldHTML(key,s){
  }
  var full=s.type==="textarea"||s.type==="phones"||s.full||s.label.length>58,
   dby=' aria-describedby="'+(s.hint?id+'-h ':"")+id+'-e"',ctl;
- if(s.type==="select")ctl='<select class="c" id="'+id+'" name="'+s.id+'"'+dby+'><option value="">Choose</option>'+s.opts.map(function(o){return'<option>'+esc(o)+'</option>'}).join("")+'</select>';
+ if(s.type==="select")ctl='<select class="c" id="'+id+'" autocomplete="off" name="'+s.id+'"'+dby+'><option value="">Choose</option>'+s.opts.map(function(o){return'<option>'+esc(o)+'</option>'}).join("")+'</select>';
  else if(s.type==="textarea"||s.type==="phones")ctl='<textarea class="c" id="'+id+'" name="'+s.id+'" rows="4" maxlength="2000"'+dby+'></textarea>';
  else{
   var it=s.type==="email"?"email":s.type==="tel"?"tel":s.type==="date"?"date":"text",
@@ -124,10 +125,10 @@ function build(key){
  def.secs.forEach(function(sc){var list=sc[1];secs.push({t:sc[0],specs:list});list.forEach(function(s){specs.push(s);by[s.id]=s})});
  var map={};Object.keys(ENTRY[key]||{}).forEach(function(k){map[norm(k)]=ENTRY[key][k]});
  var html='<div class="formhead"><h2>'+esc(def.title)+'</h2><p><span class="req-note">*</span> All fields are required. <span class="binote">Your business information from Step 1 is included automatically.</span></p></div>'+
-  '<form novalidate data-key="'+key+'" id="panel-'+key+'" role="tabpanel" aria-labelledby="tab-'+key+'" hidden>'+
+  '<form novalidate autocomplete="off" data-key="'+key+'" id="panel-'+key+'" role="tabpanel" aria-labelledby="tab-'+key+'" hidden>'+
   secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3><div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
   '<div class="notice" role="alert" id="n-'+key+'">We could not submit your form right now. Please try again in a few minutes.</div>'+
-  '<div class="actions"><button class="submit" type="submit"><span class="spin"></span><span class="lbl">Submit</span></button><button class="clear" type="button" data-clear>Clear form</button><span class="small">Your response goes to the Paytm Intelligence onboarding team.</span></div></form>';
+  '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">Submit</span></button><button class="clear" type="button" data-clear>Clear form</button><span class="small need" aria-live="polite">Your response goes to the Paytm Intelligence onboarding team.</span></div></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
  // formhead sits outside <form>; keep both inside wrapper
  panels.appendChild(wrap);
@@ -166,7 +167,7 @@ function wireCommon(F_){
 }
 function refresh(F_){
  F_.specs.forEach(function(s){if(!s.show&&!s.enable)return;var w=wrapOf(F_,s),sh=shown(F_,s),v=vis(F_,s);w.classList.toggle("hide",!sh);w.classList.toggle("off",sh&&!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
- paint();
+ syncSubmit(F_);paint();
 }
 function stat(F_){var done=0,total=0;F_.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++});return{done:done,total:total}}
 function paint(){
@@ -180,15 +181,25 @@ function paint(){
   if(t)t.classList.toggle("done",!!done)});
  $("#chk").innerHTML=rows;
 }
+function syncSubmit(F_){
+ if(F_.key==="bi"||F_.sending)return;var btn=$(".submit",F_.el);if(!btn)return;
+ var c=stat(F_),left=c.total-c.done;btn.disabled=left>0;
+ var n=$(".need",F_.el);if(n)n.textContent=left>0?left+" required field"+(left===1?"":"s")+" left. Submit unlocks when everything is completed.":"Your response goes to the Paytm Intelligence onboarding team."}
+function continueBI(){
+ var B=state.bi,first=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!first)first=w});
+ if(first){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}gate();first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
+ confirmed=true;try{localStorage.setItem(BIOK,"1")}catch(e){}gate();
+ $("#step2").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});var t=$("#tab-"+active);if(t)t.focus({preventScroll:true});
+}
 function biValid(){var B=state.bi;return B.specs.every(function(s){return check(s,get(B,s))===""})}
 function showActive(){ORDER.forEach(function(k){state[k].box.hidden=!(unlocked&&k===active)})}
 function gate(){
- var ok=biValid();unlocked=ok;
- $$("#tabs .tab").forEach(function(t){t.disabled=!ok;t.classList.toggle("locked",!ok);t.title=ok?"":"Complete Business information to unlock"});
+ var ok=confirmed&&biValid();unlocked=ok;
+ $$("#tabs .tab").forEach(function(t){t.disabled=!ok;t.classList.toggle("locked",!ok);t.title=ok?"":"Fill in the business information and click Continue"});
  $$(".tn button").forEach(function(b){b.classList.toggle("locked",!ok)});
  $("#tabs").classList.toggle("locked",!ok);$("#step2").classList.toggle("locked",!ok);$("#lock").hidden=ok;
- $("#bi").classList.toggle("done",ok);$("#bi-go").disabled=!ok;
- var st=$("#bistat");st.textContent=ok?"Business information complete. Choose your channels below.":"Complete all fields to unlock the channels.";st.className="bistat"+(ok?" ok":"");
+ $("#bi").classList.toggle("done",ok);
+ var st=$("#bistat");st.textContent=ok?"Business information confirmed. Choose your channels below.":confirmed?"Please correct the highlighted details to keep the channels unlocked.":"Fill in all fields, then click Continue to unlock the channels.";st.className="bistat"+(ok?" ok":"");
  showActive();paint();
 }
 function select(key){
@@ -200,12 +211,11 @@ function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
  host.innerHTML='<div class="formhead"><h2><span class="stepn" aria-hidden="true">1</span>Business information</h2><p><span class="req-note">*</span> All fields are required. These details are used for every channel you onboard.</p></div>'+
   '<form novalidate id="bi-form">'+BI_DEF.groups.map(function(g){return'<div class="sec"><h3>'+esc(g[0])+'</h3><div class="grid">'+g[1].map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
-  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="button" id="bi-go" disabled>Continue</button></div></form>';
+  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="submit" id="bi-go">Continue</button></div></form>';
  var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:BI_DEF.groups.map(function(g){return{t:g[0],specs:g[1]}}),map:{}};
  state.bi=F_;wireCommon(F_);
  $("#bi-clear").addEventListener("click",function(){askClear(F_)});
- $("#bi-go").addEventListener("click",function(){$("#step2").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});var t=$("#tab-"+active);if(t)t.focus({preventScroll:true})});
- F_.el.addEventListener("submit",function(e){e.preventDefault()});
+ F_.el.addEventListener("submit",function(e){e.preventDefault();continueBI()});
  draftRestore(F_);
 }
 
@@ -261,7 +271,7 @@ function draftRestore(F_){
   else if(typeof v==="string"){var c=$(".c",w);if(!c)return;if(s.type==="select"&&$$("option",c).every(function(op){return op.value!==v}))return;c.value=v}});
  refresh(F_);
 }
-function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");refresh(F_);draftClear(F_.key)}
+function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}}refresh(F_);draftClear(F_.key)}
 function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?"Your business information will be removed and the channels will be locked again. Your channel answers are kept.":"All the information you have entered in this form will be removed. This cannot be undone.";var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
 $("#cno").addEventListener("click",function(){closeDlg($("#clear"))});
@@ -291,6 +301,7 @@ function sendSheet(F_){
 /* ---------- Submit ---------- */
 function submit(F_,e){
  e.preventDefault();
+ if(F_.sending||$(".submit",F_.el).disabled)return;
  var first=null,btn=$(".submit",F_.el),note=$("#n-"+F_.key);note.classList.remove("on");
  var B=state.bi,bfirst=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!bfirst)bfirst=w});
  if(bfirst){gate();bfirst.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var bc=$("input,select,textarea",bfirst);if(bc)bc.focus({preventScroll:true});return}
@@ -308,16 +319,16 @@ function submit(F_,e){
   else p.append(key,v);
  });
  var bmap=BI_MAP[F_.key]||{};
- Object.keys(bmap).forEach(function(id){var t=bmap[id],k=t==="emailAddress"?"emailAddress":F_.map[norm(t)];if(!k){miss.push(t);return}p.append(k,get(B,B.by[id]))});
+ Object.keys(bmap).forEach(function(id){var t=bmap[id],k=t==="emailAddress"?"emailAddress":F_.map[norm(t)];if(!k){if(id!=="am")miss.push(t);return}p.append(k,get(B,B.by[id]))});
  (CFG.NA_ANSWERS&&CFG.NA_ANSWERS[F_.key]||[]).forEach(function(t){var k=F_.map[norm(t)];if(k)p.append(k,CFG.NA_VALUE||"N/A")});
  p.append("fvv","1");p.append("pageHistory","0");
- btn.disabled=true;$(".lbl",btn).textContent="Submitting";if(!debug||toSheet)busy(true);
+ F_.sending=true;btn.classList.add("sending");btn.disabled=true;$(".lbl",btn).textContent="Submitting";if(!debug||toSheet)busy(true);
 
  if(debug&&!toSheet){/* opens Google's own response page in a new tab so you can read its exact message */
   var act="https://docs.google.com/forms/d/e/"+FORM_IDS[F_.key]+"/formResponse",f=document.createElement("form");
   f.method="POST";f.action=act;f.target="_blank";f.style.display="none";
   p.forEach(function(v,k){var i=document.createElement("input");i.type="hidden";i.name=k;i.value=v;f.appendChild(i)});
-  document.body.appendChild(f);f.submit();f.remove();btn.disabled=false;$(".lbl",btn).textContent="Submit";return}
+  document.body.appendChild(f);f.submit();f.remove();F_.sending=false;btn.classList.remove("sending");$(".lbl",btn).textContent="Submit";syncSubmit(F_);return}
 
  var send;
  if(preview)send=new Promise(function(r){setTimeout(r,700)});
@@ -330,7 +341,7 @@ function submit(F_,e){
   var rem=ORDER.filter(function(k){return!submitted[k]}).map(function(k){return FORMS[k].tab}),dn=$("#dnote");dn.hidden=!rem.length;dn.textContent=rem.length?"You can also onboard on "+rem.join(" and ")+" using the same business information.":"";paint();
   var dlg=$("#done");typeof dlg.showModal==="function"?dlg.showModal():dlg.setAttribute("open","");$("#ok").focus();
  }).catch(function(err){busy(false);console.error("[Onboarding] submit failed:",err);var em=(err&&err.message)||"",code=(em==="config"?"CFG":em.indexOf("srv:")===0?"SRV-"+em.slice(4).toUpperCase():err&&err.name==="AbortError"?"TIMEOUT":err&&err.name==="SyntaxError"?"RESP":"NET")+"-"+F_.key.toUpperCase();note.textContent="We could not submit your form right now. Please try again in a few minutes. (Ref: "+code+")";note.classList.add("on");note.scrollIntoView({block:"center"})})
- .then(function(){busy(false);btn.disabled=false;$(".lbl",btn).textContent="Submit"});
+ .then(function(){busy(false);F_.sending=false;btn.classList.remove("sending");$(".lbl",btn).textContent="Submit";syncSubmit(F_)});
 }
 
 /* ---------- Reset after confirmation ---------- */
