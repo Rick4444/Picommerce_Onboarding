@@ -7,7 +7,7 @@ window.PI_CONFIG = {
   FORM_IDS: {
  whatsapp:"1FAIpQLSduxMQTB1MJ8YOm3MGKFtu5id2c8yxOYpEGSuCMpo9HMSQ5Tw",
  sms:"1FAIpQLSe--_aUL5tuKkhT-QAm9EBdMkeMoT2MhWnzyuVFHyjmdzGGZA",
- rcs:"1FAIpQLSe_mOQN8QG96_nY3Rp1ni7QozbHjdCIEquMnbcbrNERWZTmFw"
+ rcs:"1FAIpQLScPnTteCUfqx4C0fhCpxpyQhpHDgpR6hDAw8NWEfqdnlkTczw"
 },
 
   /* Google Form field IDs, keyed by the exact question title.
@@ -19,7 +19,7 @@ window.PI_CONFIG = {
   ENTRY: {
  whatsapp:{"Account Manager Name": "entry.1812996000", "Company / Business Name": "entry.710738292", "Registered Business Name (as per legal documents)": "entry.1859297936", "Business Website": "entry.1399838605", "Primary Business Contact Name": "entry.238596162", "Mobile Number": "entry.1272807465", "Designation": "entry.890469343", "Does the client already have a WhatsApp Business Account (WABA)?": "entry.730684270", "If Yes, please share the Business Manager (BM) ID": "entry.1899110157", "If Yes, please share the Facebook Page URL": "entry.395607937", "Does the client have Admin access to the Business Manager?": "entry.149381843", "Is the client currently using": "entry.640907873", "WhatsApp Business Number": "entry.331463812", "Is the WhatsApp number currently hosted with another BSP?": "entry.1905936469", "If Yes, who is the current BSP?": "entry.878826687", "If \"Other\" BSP, please specify": "entry.1938329430", "Does the client want to migrate the existing WhatsApp number to Paytm?": "entry.581018770"},
  sms: {"Company / Business Name": "entry.1121921123", "Registered Business Name": "entry.715844873", "Primary Contact Name": "entry.919389757", "Mobile Number": "entry.2082082126", "Is the business registered on the DLT platform?": "entry.509318369", "Principal Entity (PE) ID": "entry.1056004979", "Which DLT operator is the business registered with?": "entry.1013786071", "Does the client already have approved Sender IDs (Headers)?": "entry.1387254703", "If yes, please provide the Sender ID(s) (Numeric & alphabetical both)": "entry.1306954256", "How many Sender IDs are required?": "entry.1818367933", "What type of SMS will be sent?": "entry.1945829888", "How will SMS be triggered?": "entry.302930398", "Does the client require API integration?": "entry.1989208819", "Does the client require delivery reports (DLR)?": "entry.60534967", "What should be the first fallback?": "entry.609623241", "What should be the second fallback?": "entry.1453462773", "Expected Go-Live Date": "entry.1677226622", "Preferred Billing Model": "entry.1972404206", "Approved Transactional Sender ID(s)": "entry.REPLACE_TRANSACTIONAL", "Approved Promotional Sender ID(s)": "entry.REPLACE_PROMOTIONAL"},
- rcs: {"SPOC Name": "entry.1118606435", "SPOC Designation": "entry.1679670574", "SPOC Mobile Number": "entry.485470669", "Brand Name to be displayed on RCS": "entry.1635592091", "Legal Name of the Brand": "entry.154482033", "Intended use case for RCS messaging": "entry.132707126", "Agent Name (Display Name)": "entry.1095739474", "Agent Description": "entry.696298638", "Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)": "entry.795667415", "Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)": "entry.1858772363", "Brand Colors (Hex Code)": "entry.1819416538", "Customer Support Phone Number": "entry.1219833206", "Display Label for Phone Number": "entry.769174957", "Customer Support Email": "entry.146806301", "Display Label for Email": "entry.2061627988", "Business Website URL": "entry.801131581", "Display Label for Website": "entry.1694530686", "How do you obtain customer consent before sending RCS messages?": "entry.1642769548", "Privacy Policy URL": "entry.1420652932", "Terms & Conditions URL": "entry.492840082", "Please provide 5-10 RCS-enabled mobile numbers for testing": "entry.418580433", "Expected Go-Live Date": "entry.702577441", "What should be the first fallback?": "entry.782590551", "What should be the second fallback?": "entry.1175554073", "Preferred Billing Model": "entry.661321868"}
+ rcs: {"Account Manager Name": "entry.637968150", "Company / Business Name": "entry.287010760", "Registered Business Name": "entry.1451742857", "Business Website": "entry.501724492", "SPOC Name": "entry.1031102158", "SPOC Designation": "entry.568506711", "SPOC Mobile Number": "entry.494764714", "Brand Name to be displayed on RCS": "entry.2030013134", "Legal Name of the Brand": "entry.93202971", "Intended use case for RCS messaging": "entry.1361497629", "Agent Name (Display Name)": "entry.1909962289", "Agent Description": "entry.1560965023", "Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)": "entry.1181274370", "Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)": "entry.1502097465", "Brand Colors (Hex Code)": "entry.1690364136", "Customer Support Phone Number": "entry.80443449", "Customer Support Email": "entry.532459846", "Business Website URL": "entry.1480506269", "How do you obtain customer consent before sending RCS messages?": "entry.1240790307", "Privacy Policy URL": "entry.897707198", "Terms & Conditions URL": "entry.542767060"},
 },
 
   /* Questions that were removed from a page but still exist in its Google Form. Their answer is sent as NA_VALUE.
@@ -28,19 +28,11 @@ window.PI_CONFIG = {
      Google Form, you can delete it from this list too. */
   /* Per form: false = do NOT send "N/A" for hidden or empty optional questions (they are simply left out, so the
      Google Form must have them as Optional). true or missing = send "N/A" as before. WhatsApp uses the cleaned-up form. */
-  SEND_NA: { whatsapp: false },
+  SEND_NA: { whatsapp: false, rcs: false },
   NA_VALUE: "N/A",
   NA_ANSWERS: {
     whatsapp: [],
-    rcs: [
-      "Display Label for Phone Number",
-      "Display Label for Email",
-      "Display Label for Website",
-      "Please provide 5-10 RCS-enabled mobile numbers for testing",
-      "What should be the first fallback?",
-      "What should be the second fallback?",
-      "Preferred Billing Model"
-    ],
+    rcs: [],
     sms: [
       "Is the business registered on the DLT platform?",
       "Does the client already have approved Sender IDs (Headers)?",
