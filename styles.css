@@ -274,3 +274,5 @@ html{font-size:115%}.wrap{max-width:1480px}
 }
 
 .optl{font-weight:500;color:var(--mut,#6b7a90);font-size:.85em}.cnt{display:block;text-align:right;font-size:.8rem;color:var(--mut,#6b7a90);margin-top:4px}
+
+.langsel{margin-left:12px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:600 .85rem var(--body);cursor:pointer}.langsel option{color:#0b2447}
