@@ -55,6 +55,9 @@ to it, otherwise Google rejects the response. Admin access is now a required con
 - The channel tabs unlock only when the client clicks **Continue** on the business information and every field passes validation.
 - Each channel's **Submit** button stays disabled until every required field is complete (including the BSP dropdown and the
   "Other" box when they apply). A counter next to it shows how many required fields are left.
+- The **Continue** button appears only once every business information field has been filled in; until then only **Clear** is available.
+- The header menu lists WhatsApp, SMS, RCS and Voice call. WhatsApp, SMS and RCS open their tab once the channels are unlocked, and
+  show an "Add business information first" pop-up before that (the tabs below behave the same way). Voice call is display only.
 - Nothing is pre-selected; drafts saved in the browser bring back only what the client entered earlier (use Clear form to remove them).
 - **Account Manager Name** (sub-label "Paytm Sales SPOC Name") is collected for every channel. To store it, add a short-answer
   question titled exactly `Account Manager Name` to each Google Form and add its entry ID to that form's map in `config.js`.
