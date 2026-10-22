@@ -3,33 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Client Onboarding | Paytm Intelligence</title>
-<meta name="description" content="Onboard to Paytm Intelligence on WhatsApp, SMS or RCS. Complete the form for your channel and our team will get back to you.">
+<title data-i18n="meta.title">Client Onboarding | Paytm Intelligence</title>
+<meta name="description" data-i18n-attr="content:meta.description" content="Onboard to Paytm Intelligence on WhatsApp, SMS or RCS. Complete the form for your channel and our team will get back to you.">
 <meta name="theme-color" content="#002e6e">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Client Onboarding | Paytm Intelligence">
-<meta property="og:description" content="Complete the onboarding questionnaire for WhatsApp, SMS or RCS.">
+<meta property="og:title" data-i18n-attr="content:meta.title" content="Client Onboarding | Paytm Intelligence">
+<meta property="og:description" data-i18n-attr="content:meta.ogDescription" content="Complete the onboarding questionnaire for WhatsApp, SMS or RCS.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23002e6e'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%2300b9f5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2.8.0">
-<script src="config.js?v=2.8.0" defer></script>
-<script src="app.js?v=2.8.0" defer></script>
+<link rel="stylesheet" href="styles.css?v=2.9.0">
+<script src="config.js?v=2.9.0" defer></script>
+<script src="messages.js?v=2.9.0" defer></script>
+<script src="app.js?v=2.9.0" defer></script>
 </head>
 <body>
 <noscript><div style="padding:16px;text-align:center;background:#fff3cd;color:#664d03;font:16px system-ui,sans-serif">Please enable JavaScript to use the onboarding form.</div></noscript>
-<a class="skip" href="#main">Skip to the form</a>
+<a class="skip" href="#main" data-i18n="skip">Skip to the form</a>
 <div class="band">
  <div class="wrap bar">
-  <div class="logo" id="logo" aria-label="Pi by Paytm" role="img"><span class="pi">Pi</span><span class="by">by <b>PAYTM</b></span></div>
-  <nav class="tn" aria-label="Channels"><button type="button" data-k="whatsapp">WhatsApp</button><button type="button" data-k="sms">SMS</button><button type="button" data-k="rcs">RCS</button></nav>
+  <div class="logo" id="logo" data-i18n-attr="aria-label:logo.alt" aria-label="Pi by Paytm" role="img"><span class="pi">Pi</span><span class="by">by <b>PAYTM</b></span></div>
+  <nav class="tn" aria-label="Channels" data-i18n-attr="aria-label:nav.label"><button type="button" data-k="whatsapp" data-i18n="tab.whatsapp">WhatsApp</button><button type="button" data-k="sms" data-i18n="tab.sms">SMS</button><button type="button" data-k="rcs" data-i18n="tab.rcs">RCS</button></nav>
  </div>
  <div class="wrap g">
  <div class="intro">
-  <span class="live"><i></i>Onboarding open</span>
-  <h1>Welcome to Paytm Intelligence</h1>
-  <p>To get started, please fill in your business information below. Once complete, you can onboard on WhatsApp, SMS and RCS.</p>
+  <span class="live"><i></i><span data-i18n="intro.live">Onboarding open</span></span>
+  <h1 data-i18n="intro.title">Welcome to Paytm Intelligence</h1>
+  <p data-i18n="intro.text">To get started, please fill in your business information below. Once complete, you can onboard on WhatsApp, SMS and RCS.</p>
  </div>
  <div class="art" aria-hidden="true">
   <svg class="scene" viewBox="0 0 320 320" focusable="false">
@@ -40,7 +41,7 @@
    <g class="ringg"><circle cx="160" cy="160" r="100" fill="none" stroke="rgba(255,255,255,.28)" stroke-dasharray="3 7"/><circle cx="160" cy="60" r="3.5" fill="#fff" opacity=".85"/></g>
    <path id="l1" class="ln" d="M160 160L89.3 89.3"/><path id="l2" class="ln" d="M160 160L230.7 89.3"/><path id="l3" class="ln" d="M160 160L230.7 230.7"/><path id="l4" class="ln" d="M160 160L89.3 230.7"/>
    <circle r="4" fill="#25d366"><animateMotion dur="2.4s" begin="0.0s" repeatCount="indefinite"><mpath href="#l1"/></animateMotion></circle><circle r="4" fill="#25d366" opacity=".6"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#l1"/></animateMotion></circle><circle r="4" fill="#6b95ff"><animateMotion dur="2.4s" begin="0.6s" repeatCount="indefinite"><mpath href="#l2"/></animateMotion></circle><circle r="4" fill="#6b95ff" opacity=".6"><animateMotion dur="2.4s" begin="1.8s" repeatCount="indefinite"><mpath href="#l2"/></animateMotion></circle><circle r="4" fill="#ffb547"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#l3"/></animateMotion></circle><circle r="4" fill="#ffb547" opacity=".6"><animateMotion dur="2.4s" begin="2.4s" repeatCount="indefinite"><mpath href="#l3"/></animateMotion></circle><circle r="4" fill="#f472b6"><animateMotion dur="2.4s" begin="1.8s" repeatCount="indefinite"><mpath href="#l4"/></animateMotion></circle><circle r="4" fill="#f472b6" opacity=".6"><animateMotion dur="2.4s" begin="3.0s" repeatCount="indefinite"><mpath href="#l4"/></animateMotion></circle>
-   <g class="nd" style="--c:#25d366;--d:-0.0s" transform="translate(89.3 89.3)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#25d366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/></g><text y="39" text-anchor="middle">WhatsApp</text></g><g class="nd" style="--c:#6b95ff;--d:-0.7s" transform="translate(230.7 89.3)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#6b95ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="3"/><path d="M8 17v3l4-3"/></g><text y="39" text-anchor="middle">RCS</text></g><g class="nd" style="--c:#ffb547;--d:-1.4s" transform="translate(230.7 230.7)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#ffb547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></g><text y="39" text-anchor="middle">SMS</text></g><g class="nd" style="--c:#f472b6;--d:-2.1s" transform="translate(89.3 230.7)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></g><text y="39" text-anchor="middle">Voice call</text></g>
+   <g class="nd" style="--c:#25d366;--d:-0.0s" transform="translate(89.3 89.3)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#25d366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/></g><text y="39" text-anchor="middle" data-i18n="tab.whatsapp">WhatsApp</text></g><g class="nd" style="--c:#6b95ff;--d:-0.7s" transform="translate(230.7 89.3)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#6b95ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="3"/><path d="M8 17v3l4-3"/></g><text y="39" text-anchor="middle" data-i18n="tab.rcs">RCS</text></g><g class="nd" style="--c:#ffb547;--d:-1.4s" transform="translate(230.7 230.7)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#ffb547" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></g><text y="39" text-anchor="middle" data-i18n="tab.sms">SMS</text></g><g class="nd" style="--c:#f472b6;--d:-2.1s" transform="translate(89.3 230.7)"><circle class="halo" r="22"/><circle class="bg" r="22"/><g transform="translate(-10 -10) scale(.84)" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></g><text y="39" text-anchor="middle" data-i18n="node.voice">Voice call</text></g>
    <g class="corew"><circle class="chalo" cx="160" cy="160" r="32"/><circle cx="160" cy="160" r="31" fill="url(#cg)"/><text x="160" y="169" text-anchor="middle" class="pitx">Pi</text></g>
    <circle class="sp" cx="125" cy="42" r="2.5"/><circle class="sp s2" cx="52" cy="160" r="2"/><circle class="sp s3" cx="268" cy="160" r="2.5"/><circle class="sp s4" cx="200" cy="282" r="2"/>
   </svg>
@@ -50,56 +51,56 @@
 <main id="main"><div class="wrap">
  <div class="layout">
   <div class="col">
-   <section class="card bi" id="bi" aria-label="Business information"><div class="sk" id="sk" role="status"><span class="sr">Loading the onboarding form</span><i class="t"></i><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div></div></section>
-   <div class="stephead locked" id="step2"><span class="stepn" aria-hidden="true">2</span><div><h2>Choose your channels</h2><p>Complete one or more. Your business information is added automatically.</p></div></div>
-   <div class="tabs locked" role="tablist" aria-label="Onboarding channel" id="tabs"><span class="tab-sk"></span><span class="tab-sk"></span><span class="tab-sk"></span></div>
-   <div class="card" id="panels"><div class="lock" id="lock"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg><h3>Channels are locked</h3><p>Complete the business information above and click Continue to unlock WhatsApp, SMS and RCS.</p></div></div>
+   <section class="card bi" id="bi" aria-label="Business information" data-i18n-attr="aria-label:bi.title"><div class="sk" id="sk" role="status"><span class="sr" data-i18n="loading">Loading the onboarding form</span><i class="t"></i><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div></div></section>
+   <div class="stephead locked" id="step2"><span class="stepn" aria-hidden="true">2</span><div><h2 data-i18n="step2.title">Choose your channels</h2><p data-i18n="step2.text">Complete one or more. Your business information is added automatically.</p></div></div>
+   <div class="tabs locked" role="tablist" aria-label="Onboarding channel" data-i18n-attr="aria-label:tabs.label" id="tabs"><span class="tab-sk"></span><span class="tab-sk"></span><span class="tab-sk"></span></div>
+   <div class="card" id="panels"><div class="lock" id="lock"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg><h3 data-i18n="lock.title">Channels are locked</h3><p data-i18n="lock.text">Complete the business information above and click Continue to unlock WhatsApp, SMS and RCS.</p></div></div>
   </div>
-  <aside aria-label="Progress and next steps">
-   <div class="card prog"><h4>Your progress</h4><div class="meter" role="progressbar" aria-label="Form completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><i id="bar"></i></div><p class="count" id="count" aria-live="polite"></p><ul class="chk hm" id="chk" style="margin-top:16px"></ul></div>
-   <div class="card hm"><h4>What happens next</h4><ol class="flow"><li><b>Add business information</b>Entered once and used for every channel.</li><li><b>Complete your channels</b>Submit one, two or all of WhatsApp, SMS and RCS.</li><li><b>We get back to you</b>You will hear from us by email.</li></ol></div>
+  <aside aria-label="Progress and next steps" data-i18n-attr="aria-label:aside.label">
+   <div class="card prog"><h4 data-i18n="prog.title">Your progress</h4><div class="meter" role="progressbar" aria-label="Form completion" data-i18n-attr="aria-label:prog.meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><i id="bar"></i></div><p class="count" id="count" aria-live="polite"></p><ul class="chk hm" id="chk" style="margin-top:16px"></ul></div>
+   <div class="card hm"><h4 data-i18n="next.title">What happens next</h4><ol class="flow"><li><b data-i18n="next.1.title">Add business information</b><span data-i18n="next.1.text">Entered once and used for every channel.</span></li><li><b data-i18n="next.2.title">Complete your channels</b><span data-i18n="next.2.text">Submit one, two or all of WhatsApp, SMS and RCS.</span></li><li><b data-i18n="next.3.title">We get back to you</b><span data-i18n="next.3.text">You will hear from us by email.</span></li></ol></div>
   </aside>
  </div>
 </div></main>
 
-<footer><div class="wrap"><span>&copy; <span id="yr">2026</span> Paytm Intelligence</span><span>Need help? Contact your Paytm Intelligence account manager.</span></div></footer>
+<footer><div class="wrap"><span data-i18n="footer.copy">&copy; 2026 Paytm Intelligence</span><span data-i18n="footer.help">Need help? Contact your Paytm Intelligence account manager.</span></div></footer>
 
 <dialog id="welcome" aria-labelledby="wt"><div class="dlg wl">
  <div class="pi" aria-hidden="true">Pi</div>
- <h2 id="wt">Welcome to Paytm Intelligence</h2>
- <p>We appreciate your interest in working with us. To begin onboarding, please complete the questionnaire for your preferred messaging channel.</p>
+ <h2 id="wt" data-i18n="welcome.title">Welcome to Paytm Intelligence</h2>
+ <p data-i18n="welcome.text">We appreciate your interest in working with us. To begin onboarding, please complete the questionnaire for your preferred messaging channel.</p>
  <ol class="wsteps">
-  <li><b>1</b><span><strong>Enter your business information</strong><small>Entered once and shared across all channels</small></span></li>
-  <li><b>2</b><span><strong>Complete your channels</strong><small>WhatsApp, SMS and RCS: submit all of them, or only the ones you need</small></span></li>
-  <li><b>3</b><span><strong>We get back to you</strong><small>Our onboarding team will review your submission and contact you shortly</small></span></li>
+  <li><b>1</b><span><strong data-i18n="welcome.1.title">Enter your business information</strong><small data-i18n="welcome.1.text">Entered once and shared across all channels</small></span></li>
+  <li><b>2</b><span><strong data-i18n="welcome.2.title">Complete your channels</strong><small data-i18n="welcome.2.text">WhatsApp, SMS and RCS: submit all of them, or only the ones you need</small></span></li>
+  <li><b>3</b><span><strong data-i18n="welcome.3.title">We get back to you</strong><small data-i18n="welcome.3.text">Our onboarding team will review your submission and contact you shortly</small></span></li>
  </ol>
- <button class="submit" id="wgo" type="button">Begin onboarding</button>
+ <button class="submit" id="wgo" type="button" data-i18n="welcome.go">Begin onboarding</button>
 </div></dialog>
 
 <div class="busy" id="busy" hidden role="alertdialog" aria-modal="true" aria-labelledby="bt" aria-describedby="bd">
- <div class="bcard"><div class="ring" aria-hidden="true"></div><h2 id="bt">Submitting your response</h2><p id="bd">Please keep this page open.</p>
- <p class="bslow" id="bslow" hidden>This is taking longer than usual because of a slow connection. Please do not close or refresh this page.</p></div>
+ <div class="bcard"><div class="ring" aria-hidden="true"></div><h2 id="bt" data-i18n="busy.title">Submitting your response</h2><p id="bd" data-i18n="busy.text">Please keep this page open.</p>
+ <p class="bslow" id="bslow" data-i18n="busy.slow" hidden>This is taking longer than usual because of a slow connection. Please do not close or refresh this page.</p></div>
 </div>
 
 <dialog id="needbi" aria-labelledby="nbt"><div class="dlg">
  <div class="lockic" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg></div>
- <h2 id="nbt">Add business information first</h2>
- <p>Please fill in your business information and click Continue. WhatsApp, SMS and RCS unlock after that.</p>
- <button class="submit" id="nbgo" type="button">Add business information</button>
+ <h2 id="nbt" data-i18n="needbi.title">Add business information first</h2>
+ <p data-i18n="needbi.text">Please fill in your business information and click Continue. WhatsApp, SMS and RCS unlock after that.</p>
+ <button class="submit" id="nbgo" type="button" data-i18n="needbi.go">Add business information</button>
 </div></dialog>
 
 <dialog id="clear" aria-labelledby="ct"><div class="dlg">
- <h2 id="ct">Clear this form?</h2>
- <p>All the information you have entered in this form will be removed. This cannot be undone.</p>
- <div class="btnrow"><button class="clear" id="cno" type="button">Cancel</button><button class="submit" id="cyes" type="button">Clear form</button></div>
+ <h2 id="ct" data-i18n="clear.title">Clear this form?</h2>
+ <p data-i18n="clear.form">All the information you have entered in this form will be removed. This cannot be undone.</p>
+ <div class="btnrow"><button class="clear" id="cno" type="button" data-i18n="clear.cancel">Cancel</button><button class="submit" id="cyes" type="button" data-i18n="btn.clearForm">Clear form</button></div>
 </div></dialog>
 
 <dialog id="done" aria-labelledby="dt"><div class="dlg">
  <div class="tick"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#14a05a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 17.5l6.5 6.5L26 11"/></svg></div>
- <h2 id="dt">Thank you for your submission</h2>
- <p>We have received your onboarding request. Our team will review your details and get back to you shortly.</p>
+ <h2 id="dt" data-i18n="done.title">Thank you for your submission</h2>
+ <p data-i18n="done.text">We have received your onboarding request. Our team will review your details and get back to you shortly.</p>
  <p class="dnote" id="dnote" hidden></p>
- <button class="submit" id="ok" type="button">OK</button>
+ <button class="submit" id="ok" type="button" data-i18n="done.ok">OK</button>
 </div></dialog>
 </body>
 </html>
