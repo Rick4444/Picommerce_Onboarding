@@ -437,3 +437,13 @@ h1,h2,h3,h4{text-wrap:balance}p{text-wrap:pretty}
 .opt span:has(.od){align-items:start}.opt span:has(.od)::before{align-self:start;margin-top:2px}
 .opt span:not(:has(.od)){display:flex;align-items:center}
 .hsteps li.done b{font-size:.75rem}
+
+/* v3.4.3: step badge sizing (number was inheriting the heading size) and the step 3 "Submit" marker */
+.bi.done .stepn,.bi .stepn{font:700 .9rem/1 var(--body)}
+.stephead h2{line-height:30px}.stephead .stepn{margin-top:0}
+.bi .formhead h2{min-height:30px}
+.step3{display:flex;align-items:flex-start;gap:14px;margin:26px 0 16px;padding-top:22px;border-top:1px solid var(--line)}
+.step3 h3{margin:0;font:700 1.12rem/30px var(--head);letter-spacing:-.015em}
+.step3 p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.step3 .stepn{margin-top:0}
+.step3+.actions{border-top:0;margin-top:0;padding-top:0}
