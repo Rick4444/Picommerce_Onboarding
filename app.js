@@ -334,6 +334,7 @@ function submit(F_,e){
  F_.specs.forEach(function(s){
   var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=F_.map[norm(s.title||s.label)];
   if(!shown&&s.type==="select"){if(!HIDDEN_SELECT_VALUE)return;v=HIDDEN_SELECT_VALUE}
+  if(!shown&&s.type==="url")return; /* optional link question: leave blank so a URL rule in the form cannot reject "N/A" */
   if(!key){miss.push(s.label);return}
   if(s.type==="date"){var d=v.split("-");p.append(key+"_year",d[0]);p.append(key+"_month",d[1]);p.append(key+"_day",d[2])}
   else if(Array.isArray(v)){v.forEach(function(x){p.append(key,x)});p.append(key+"_sentinel","")}
