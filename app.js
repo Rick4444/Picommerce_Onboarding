@@ -6,6 +6,7 @@ function pick(){var q=(location.search.match(/[?&]lang=([\w-]+)/)||[])[1],s="";t
  var nav=(navigator.language||"").toLowerCase().split("-")[0];
  return[q,s,nav].filter(function(l){return l&&M[l]&&langs[l]})[0]||def}
 var lang=pick();
+if(!M.en&&!M[def]){console.error("[Onboarding] messages.js was not loaded. Upload messages.js next to index.html.");var bn=document.createElement("div");bn.setAttribute("role","alert");bn.style.cssText="position:fixed;z-index:99999;left:0;right:0;top:0;padding:10px 16px;background:#b3261e;color:#fff;font:600 14px system-ui,sans-serif;text-align:center";bn.textContent="Setup error: messages.js was not found. Upload messages.js to the same folder as index.html, then refresh.";document.addEventListener("DOMContentLoaded",function(){document.body.appendChild(bn)});if(document.body)document.body.appendChild(bn)}
 function raw(k){var v=M[lang]&&M[lang][k];if(v==null)v=M[def]&&M[def][k];return v}
 function T(k,vars){var v=raw(k);if(v==null)return k;vars=vars||{};if(vars.year==null)vars.year=new Date().getFullYear();
  return String(v).replace(/\{(\w+)\}/g,function(m,n){return vars[n]!=null?vars[n]:m})}
