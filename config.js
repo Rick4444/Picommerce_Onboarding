@@ -37,6 +37,15 @@ window.PI_CONFIG = {
       "What should be the second fallback?",
       "Preferred Billing Model"
     ],
+    rcs: [
+      "Display Label for Phone Number",
+      "Display Label for Email",
+      "Display Label for Website",
+      "Please provide 5-10 RCS-enabled mobile numbers for testing",
+      "What should be the first fallback?",
+      "What should be the second fallback?",
+      "Preferred Billing Model"
+    ],
     sms: [
       "Is the business registered on the DLT platform?",
       "Does the client already have approved Sender IDs (Headers)?",
