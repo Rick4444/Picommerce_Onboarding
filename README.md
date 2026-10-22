@@ -45,16 +45,16 @@ All files sit in one folder (repository root or `/docs`).
 
 ## WhatsApp: questions that are hidden or removed are sent as N/A
 
-If the client answers **No** to "already have a WhatsApp Business Account (WABA)?", or **No** to "hosted with another BSP?", the
-questions that no longer apply are hidden, the Submit button unlocks, and each hidden answer is sent as `N/A`. The questions
-removed from the page (Meta Business Manager yes/no, Business Verified, Facebook Page yes/no, message type, fallbacks, billing)
-are always sent as `N/A` (`NA_ANSWERS` in `config.js`).
+- **BM ID** and **Facebook Page URL** show only when "already have a WABA?" is **Yes**.
+- The **BSP dropdown** and **migration** question show only when "hosted with another BSP?" is **Yes**.
+- The **"Other BSP"** box shows only when the BSP dropdown is **Other**.
+- Anything hidden is sent as `N/A`. The questions removed from the page (Meta Business Manager yes/no, Business Verified, Facebook Page
+  yes/no, message type, fallbacks, billing) are always sent as `N/A` (`NA_ANSWERS` in `config.js`).
 
-In the WhatsApp Google Form, **add an `N/A` choice** to every choice or dropdown question that can be hidden or removed: the
-removed questions above, plus admin access, "currently using", "hosted with another BSP", "migrate" and the BSP dropdown.
-Making them optional is not enough on its own, because the page still sends `N/A` and Google can reject a value that is not
-one of the choices. Text questions (BM ID, Facebook URL, WhatsApp number, "Other BSP") accept `N/A` unless the form restricts
-them to numbers or links; remove such a restriction if you have set one.
+In the WhatsApp Google Form, **add an `N/A` choice** to every choice or dropdown question that can be hidden or removed: the removed
+questions above, plus "hosted with another BSP", "migrate" and the BSP dropdown. Making them optional is not enough on its own, because
+the page still sends `N/A` and Google can reject a value that is not one of the choices. Text questions (BM ID, Facebook URL, "Other BSP")
+accept `N/A` unless the form restricts them to numbers or links; remove such a restriction if you have set one.
 
 ## Unlocking and submitting
 
@@ -65,11 +65,9 @@ them to numbers or links; remove such a restriction if you have set one.
 - The header menu lists WhatsApp, SMS and RCS. They open their tab once the channels are unlocked, and
   show an "Add business information first" pop-up before that (the tabs below behave the same way).
 - The business information card can be collapsed and expanded with its toggle; it collapses automatically after a successful Continue
-  and shows a one-line summary. On the WhatsApp form, answering **No** to "already have a WhatsApp Business Account (WABA)?"
-  removes every other question, and answering **No** to "hosted with another BSP?" removes the BSP, "Other BSP" and migration
-  questions; the removed answers are sent as `N/A`. Every WhatsApp radio / dropdown question that can be removed this way needs an
-  **N/A** choice (or must be Optional) in the Google Form: admin access, "currently using", "hosted with another BSP", "migrate",
-  and the BSP dropdown.
+  and shows a one-line summary. On the WhatsApp form, the BM ID and Facebook Page URL appear only when the client answers **Yes** to "already have a WhatsApp Business
+  Account (WABA)?" (they are sent as `N/A` otherwise); every other question stays. The BSP dropdown and migration question appear only when
+  "hosted with another BSP?" is **Yes**, and the "Other BSP" box appears only when the dropdown says **Other**. Hidden answers are sent as `N/A`.
 - Nothing is pre-selected; drafts saved in the browser bring back only what the client entered earlier (use Clear form to remove them).
 - **Account Manager Name** (sub-label "Paytm Sales SPOC Name") is collected for every channel. To store it, add a short-answer
   question titled exactly `Account Manager Name` to each Google Form and add its entry ID to that form's map in `config.js`.
