@@ -86,7 +86,7 @@ var BI_DEF={groups:[
 BI_DEF.specs=[].concat.apply([],BI_DEF.groups);
 var BI_MAP={
  whatsapp:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",des:"Designation",mob:"Mobile Number"},
- sms:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
+ sms:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",web:"Business Website",pc:"Primary Contact Name",des:"Designation",mob:"Mobile Number"},
  rcs:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",web:"Business Website",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
 };
 /* Text shown to the customer, read from messages.js */
