@@ -27,16 +27,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3.3.1">
-<script src="config.js?v=3.3.1" defer></script>
-<script src="messages.js?v=3.3.1" defer></script>
-<script src="app.js?v=3.3.1" defer></script>
+<link rel="stylesheet" href="styles.css?v=3.4.0">
+<script src="config.js?v=3.4.0" defer></script>
+<script src="messages.js?v=3.4.0" defer></script>
+<script src="app.js?v=3.4.0" defer></script>
 </head>
 <body>
 <!-- Connection banner: shown by app.js when the device goes offline, comes back, or the network is slow. Text is filled from messages.js. -->
 <div class="net" id="net" role="status" aria-live="polite" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16.2a5 5 0 0 1 7 0M12 20h.01"/><path class="slash" d="M3 3l18 18"/></svg><div><strong id="net-t"></strong><span id="net-x"></span></div></div>
 <noscript><div style="padding:16px;text-align:center;background:#fff3cd;color:#664d03;font:16px system-ui,sans-serif">Please enable JavaScript to use the onboarding form.</div></noscript>
 <a class="skip" href="#main" data-i18n="skip"></a>
+<!-- Sticky progress bar: appears after the customer scrolls past the header; chips are built by app.js (paint) -->
+<nav class="sbar" id="sbar" data-i18n-attr="aria-label:prog.title" aria-hidden="true"><div class="wrap sb-in"><span class="sb-t" data-i18n="prog.title"></span><ul class="sb-chips" id="sb-chips"></ul><span class="sb-pct" id="sb-pct"></span></div><i class="sb-m"><i id="sb-bar"></i></i></nav>
 <!-- Header: logo, channel menu, language switcher (added by app.js), welcome text and the animated Pi graphic -->
 <div class="band">
  <div class="wrap bar">
@@ -48,6 +50,9 @@
   <span class="live"><i></i><span data-i18n="intro.live"></span></span>
   <h1 data-i18n="intro.title"></h1>
   <p data-i18n="intro.text"></p>
+  <!-- Three-step strip: app.js marks each step done / current as the customer progresses -->
+  <ol class="hsteps" id="hsteps"><li><b>1</b><span data-i18n="intro.s1"></span></li><li><b>2</b><span data-i18n="intro.s2"></span></li><li><b>3</b><span data-i18n="intro.s3"></span></li></ol>
+  <p class="eta" data-i18n="intro.eta"></p>
  </div>
  <div class="art" aria-hidden="true">
   <svg class="scene" viewBox="0 0 320 320" focusable="false">
@@ -114,11 +119,12 @@
  <div class="btnrow"><button class="clear" id="cno" type="button" data-i18n="clear.cancel"></button><button class="submit" id="cyes" type="button" data-i18n="btn.clearForm"></button></div>
 </div></dialog>
 
-<dialog id="done" aria-labelledby="dt"><div class="dlg">
+<dialog id="done" aria-labelledby="dt"><div class="dlg dn">
  <div class="tick"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#14a05a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 17.5l6.5 6.5L26 11"/></svg></div>
  <h2 id="dt" data-i18n="done.title"></h2>
  <p data-i18n="done.text"></p>
  <p class="dnote" id="dnote" hidden></p>
+ <div class="dnext"><h3 data-i18n="done.next.title"></h3><ol><li data-i18n="done.next.1"></li><li data-i18n="done.next.2"></li><li data-i18n="done.next.3"></li></ol></div>
  <button class="submit" id="ok" type="button" data-i18n="done.ok"></button>
 </div></dialog>
 </body>
