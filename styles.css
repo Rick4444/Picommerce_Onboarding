@@ -321,3 +321,6 @@ html{font-size:115%}.wrap{max-width:1480px}
 
 /* No upload service configured: hide the Paste link / Upload image switch and the upload area, leaving only the link box. */
 .noup .seg,.noup .up{display:none!important}
+
+/* "Fill different business info": sits in the Business information header so it stays usable when the section is collapsed */
+.bi-new{margin-top:10px;padding:9px 16px}
