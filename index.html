@@ -13,9 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2.2.0">
-<script src="config.js?v=2.2.0" defer></script>
-<script src="app.js?v=2.2.0" defer></script>
+<link rel="stylesheet" href="styles.css?v=2.3.0">
+<script src="config.js?v=2.3.0" defer></script>
+<script src="app.js?v=2.3.0" defer></script>
 </head>
 <body>
 <noscript><div style="padding:16px;text-align:center;background:#fff3cd;color:#664d03;font:16px system-ui,sans-serif">Please enable JavaScript to use the onboarding form.</div></noscript>
@@ -23,7 +23,7 @@
 <div class="band">
  <div class="wrap bar">
   <div class="logo" id="logo" aria-label="Pi by Paytm" role="img"><span class="pi">Pi</span><span class="by">by <b>PAYTM</b></span></div>
-  <nav class="tn" aria-label="Channels"><button type="button" data-k="whatsapp">WhatsApp</button><button type="button" data-k="sms">SMS</button><button type="button" data-k="rcs">RCS</button></nav>
+  <nav class="tn" aria-label="Channels"><button type="button" data-k="whatsapp">WhatsApp</button><button type="button" data-k="sms">SMS</button><button type="button" data-k="rcs">RCS</button><span class="tn-static">Voice call</span></nav>
  </div>
  <div class="wrap g">
  <div class="intro">
@@ -80,6 +80,13 @@
  <div class="bcard"><div class="ring" aria-hidden="true"></div><h2 id="bt">Submitting your response</h2><p id="bd">Please keep this page open.</p>
  <p class="bslow" id="bslow" hidden>This is taking longer than usual because of a slow connection. Please do not close or refresh this page.</p></div>
 </div>
+
+<dialog id="needbi" aria-labelledby="nbt"><div class="dlg">
+ <div class="lockic" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg></div>
+ <h2 id="nbt">Add business information first</h2>
+ <p>Please fill in your business information and click Continue. WhatsApp, SMS and RCS unlock after that.</p>
+ <button class="submit" id="nbgo" type="button">Add business information</button>
+</div></dialog>
 
 <dialog id="clear" aria-labelledby="ct"><div class="dlg">
  <h2 id="ct">Clear this form?</h2>
