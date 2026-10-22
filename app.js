@@ -11,7 +11,10 @@ if(!M.en&&!M[def]){console.error("[Onboarding] messages.js was not loaded. Uploa
 /* Looks up one message: current language first, English as the fallback. */
 function raw(k){var v=M[lang]&&M[lang][k];if(v==null)v=M[def]&&M[def][k];return v}
 /* T("key",{name:"x"}) returns the message with {name} filled in. Returns the key itself if the message is missing. */
-function T(k,vars){var v=raw(k);if(v==null)return k;vars=vars||{};if(vars.year==null)vars.year=new Date().getFullYear();
+var warned=false;
+/* A missing message means messages.js on the server is older than app.js: show nothing instead of the raw key, and tell the admin once. */
+function missing(k){console.error("[Onboarding] message missing: "+k);if(warned||!document.body)return;warned=true;var b=document.createElement("div");b.setAttribute("role","alert");b.style.cssText="position:fixed;z-index:99999;left:0;right:0;bottom:0;padding:10px 16px;background:#b3261e;color:#fff;font:600 14px system-ui,sans-serif;text-align:center";b.textContent="Setup notice: messages.js is out of date. Upload the latest messages.js and styles.css, then hard-refresh.";document.body.appendChild(b)}
+function T(k,vars){var v=raw(k);if(v==null){missing(k);return""}vars=vars||{};if(vars.year==null)vars.year=new Date().getFullYear();
  return String(v).replace(/\{(\w+)\}/g,function(m,n){return vars[n]!=null?vars[n]:m})}
 window.PI_T=T;window.PI_HAS=function(k){return raw(k)!=null};window.PI_LANG=lang;
 /* Fills every data-i18n / data-i18n-attr element in index.html from messages.js and sets the page language. */
@@ -87,7 +90,7 @@ var BI_MAP={
  rcs:{am:"Account Manager Name",email:"emailAddress",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
 };
 /* Text shown to the customer, read from messages.js */
-var fl=function(key,s){return T("f."+key+"."+s.id)};
+var fl=function(key,s){var k="f."+key+"."+s.id;return HAS(k)?T(k):""};
 var fh=function(key,s){var k="f."+key+"."+s.id+".hint";return HAS(k)?T(k):""};
 var opt=function(o){var k="opt."+o;return HAS(k)?T(k):o};
 
