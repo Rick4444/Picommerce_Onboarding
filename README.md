@@ -43,12 +43,18 @@ All files sit in one folder (repository root or `/docs`).
 3. Which business answer fills which Google Form question is set in `BI_MAP` in `app.js`
    (for RCS: contact name and mobile become "SPOC Name" and "SPOC Mobile Number", designation becomes "SPOC Designation").
 
-## WhatsApp questions removed from the page
+## WhatsApp: questions that are hidden or removed are sent as N/A
 
-The page no longer asks for the Meta Business Manager yes/no, "Business Verified", Facebook Page yes/no, message type,
-fallbacks or billing model. Because they still exist in the WhatsApp Google Form, the page sends `N/A` for them
-(`NA_ANSWERS` in `config.js`). In the Google Form, set each of those questions to **Optional**, or add an **N/A** choice
-to it, otherwise Google rejects the response. Admin access is now a required confirmation tick box and is sent as `Yes`.
+If the client answers **No** to "already have a WhatsApp Business Account (WABA)?", or **No** to "hosted with another BSP?", the
+questions that no longer apply are hidden, the Submit button unlocks, and each hidden answer is sent as `N/A`. The questions
+removed from the page (Meta Business Manager yes/no, Business Verified, Facebook Page yes/no, message type, fallbacks, billing)
+are always sent as `N/A` (`NA_ANSWERS` in `config.js`).
+
+In the WhatsApp Google Form, **add an `N/A` choice** to every choice or dropdown question that can be hidden or removed: the
+removed questions above, plus admin access, "currently using", "hosted with another BSP", "migrate" and the BSP dropdown.
+Making them optional is not enough on its own, because the page still sends `N/A` and Google can reject a value that is not
+one of the choices. Text questions (BM ID, Facebook URL, WhatsApp number, "Other BSP") accept `N/A` unless the form restricts
+them to numbers or links; remove such a restriction if you have set one.
 
 ## Unlocking and submitting
 
@@ -56,8 +62,14 @@ to it, otherwise Google rejects the response. Admin access is now a required con
 - Each channel's **Submit** button stays disabled until every required field is complete (including the BSP dropdown and the
   "Other" box when they apply). A counter next to it shows how many required fields are left.
 - The **Continue** button appears only once every business information field has been filled in; until then only **Clear** is available.
-- The header menu lists WhatsApp, SMS, RCS and Voice call. WhatsApp, SMS and RCS open their tab once the channels are unlocked, and
-  show an "Add business information first" pop-up before that (the tabs below behave the same way). Voice call is display only.
+- The header menu lists WhatsApp, SMS and RCS. They open their tab once the channels are unlocked, and
+  show an "Add business information first" pop-up before that (the tabs below behave the same way).
+- The business information card can be collapsed and expanded with its toggle; it collapses automatically after a successful Continue
+  and shows a one-line summary. On the WhatsApp form, answering **No** to "already have a WhatsApp Business Account (WABA)?"
+  removes every other question, and answering **No** to "hosted with another BSP?" removes the BSP, "Other BSP" and migration
+  questions; the removed answers are sent as `N/A`. Every WhatsApp radio / dropdown question that can be removed this way needs an
+  **N/A** choice (or must be Optional) in the Google Form: admin access, "currently using", "hosted with another BSP", "migrate",
+  and the BSP dropdown.
 - Nothing is pre-selected; drafts saved in the browser bring back only what the client entered earlier (use Clear form to remove them).
 - **Account Manager Name** (sub-label "Paytm Sales SPOC Name") is collected for every channel. To store it, add a short-answer
   question titled exactly `Account Manager Name` to each Google Form and add its entry ID to that form's map in `config.js`.
