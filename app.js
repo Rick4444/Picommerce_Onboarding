@@ -169,7 +169,7 @@ function build(key){
   secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3>'+(sc.n?'<div class="callout" role="note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg><div><strong>'+esc(sc.n[0])+'</strong><p>'+esc(sc.n[1])+'</p></div></div>':'')+'<div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
   '<input class="hp" type="text" name="hp_x7" tabindex="-1" autocomplete="off" aria-hidden="true">'+
   '<div class="notice" role="alert" id="n-'+key+'">'+esc(T("err.submit"))+'</div>'+
-  '<div class="step3"><span class="stepn" aria-hidden="true">3</span><div><h3>'+esc(T("step3.title"))+'</h3><p>'+esc(T("step3.text"))+'</p></div></div>'+
+  '<div class="step3"><div><h3>'+esc(T("step3.title"))+'</h3><p>'+esc(T("step3.text"))+'</p></div></div>'+
   '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
  // formhead sits outside <form>; keep both inside wrapper
@@ -288,7 +288,7 @@ function select(key){
 /* Builds the shared business information form (step 1). */
 function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
- host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2><span class="stepn" aria-hidden="true">1</span>'+esc(T("bi.title"))+'<span class="okpill">'+esc(T("bi.confirmed"))+'</span></h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p><button class="clear bi-new" type="button" id="bi-new" hidden>'+esc(T("btn.newBI"))+'</button></div>'+
+ host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2>'+esc(T("bi.title"))+'<span class="okpill">'+esc(T("bi.confirmed"))+'</span></h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p><button class="clear bi-new" type="button" id="bi-new" hidden>'+esc(T("btn.newBI"))+'</button></div>'+
   '<button type="button" class="bi-toggle" id="bi-toggle" aria-expanded="true" aria-controls="bi-form"><span class="bt-l">'+esc(T("btn.collapse"))+'</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10l4.5-4.5L12.5 10"/></svg></button></div>'+
   '<form novalidate id="bi-form" class="bi-body"><div class="inner"><div class="bp">'+BI_DEF.groups.map(function(g,gi){return'<div class="sec"><h3>'+esc(T("bi.group."+gi))+'</h3><div class="grid">'+g.map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
   '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">'+esc(T("btn.clear"))+'</button><button class="submit" type="submit" id="bi-go">'+esc(T("btn.continue"))+'</button></div></div></div></form>';
