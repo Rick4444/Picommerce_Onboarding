@@ -28,10 +28,12 @@ var S=function(id,l,opts,o){return F(id,l,"select",Object.assign({opts:opts},o))
 var is=function(id,v){return function(g){return g(id)===v}};
 var BILL=R("bill","Preferred Billing Model",["Prepaid","Postpaid"]);
 
+var hasW=is("waba","Yes"),hostY=function(g){return g("waba")==="Yes"&&g("host")==="Yes"};
 var FORMS={
 whatsapp:{tab:"WhatsApp",color:"#25d366",title:"WhatsApp Business API (WABA) Onboarding Questionnaire",secs:[
- ["Meta Business Account",[F("bmid","Business Manager (BM) ID","text",{title:"If Yes, please share the Business Manager (BM) ID"}),F("fbu","Facebook Page URL","url",{title:"If Yes, please share the Facebook Page URL"}),F("adm","Admin access","ack",{title:"Does the client have Admin access to the Business Manager?",note:"The SPOC must have full admin access to the Meta Business Manager at the time of onboarding. Without it, we cannot complete the setup.",ackLabel:"I confirm the SPOC will have full admin access"})]],
- ["WhatsApp Business Details",[R("waba","Does the client already have a WhatsApp Business Account (WABA)?",YN),R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"]),F("wan","WhatsApp Business Number","tel"),R("host","Is the WhatsApp number currently hosted with another BSP?",YN),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:is("host","Yes")}),F("bspo","If \"Other\" BSP, please specify","text",{show:is("host","Yes"),enable:is("bsp","Other")}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN)]]]},
+ ["WhatsApp Business Account",[R("waba","Does the client already have a WhatsApp Business Account (WABA)?",YN)]],
+ ["Meta Business Account",[F("bmid","Business Manager (BM) ID","text",{title:"If Yes, please share the Business Manager (BM) ID",show:hasW}),F("fbu","Facebook Page URL","url",{title:"If Yes, please share the Facebook Page URL",show:hasW}),F("adm","Admin access","ack",{title:"Does the client have Admin access to the Business Manager?",note:"The SPOC must have full admin access to the Meta Business Manager at the time of onboarding. Without it, we cannot complete the setup.",ackLabel:"I confirm the SPOC will have full admin access",show:hasW})]],
+ ["WhatsApp Business Details",[R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"],{show:hasW}),F("wan","WhatsApp Business Number","tel",{show:hasW}),R("host","Is the WhatsApp number currently hosted with another BSP?",YN,{show:hasW}),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:hostY}),F("bspo","If \"Other\" BSP, please specify","text",{show:hostY,enable:is("bsp","Other")}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN,{show:hostY})]]]},
 sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
  ["DLT Registration",[R("dlt","Is the business registered on the DLT platform?",YN),F("pe","Principal Entity (PE) ID","text",{show:is("dlt","Yes")}),S("op","Which DLT operator is the business registered with?",["Airtel","Jio","Vodafone Idea (Vi)","BSNL","Smart Ping"])]],
  ["Sender ID (Header)",[R("has","Does the client already have approved Sender IDs (Headers)?",YN),F("sid","If yes, please provide the Sender ID(s) (Numeric & alphabetical both)","text",{show:is("has","Yes"),full:1}),F("ns","How many Sender IDs are required?","number")]],
@@ -167,14 +169,16 @@ function wireCommon(F_){
 }
 function refresh(F_){
  F_.specs.forEach(function(s){if(!s.show&&!s.enable)return;var w=wrapOf(F_,s),sh=shown(F_,s),v=vis(F_,s);w.classList.toggle("hide",!sh);w.classList.toggle("off",sh&&!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
- syncSubmit(F_);paint();
+ syncSubmit(F_);
+ $$(".sec",F_.el).forEach(function(sc){var it=$$("[data-id]",sc);sc.classList.toggle("hide",it.length>0&&it.every(function(w){return w.classList.contains("hide")}))});
+ paint();
 }
 function stat(F_){var done=0,total=0;F_.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++});return{done:done,total:total}}
 function paint(){
  if(!state.bi||!ORDER.every(function(k){return state[k]}))return;
  var cur=unlocked?state[active]:state.bi,c=stat(cur),pct=c.total?Math.round(c.done/c.total*100):0;
  $("#bar").style.width=pct+"%";$("#meter").setAttribute("aria-valuenow",pct);
- $("#count").textContent=(unlocked?FORMS[active].tab:"Business information")+": "+c.done+" of "+c.total+" fields completed";
+ $("#count").textContent=(unlocked?FORMS[active].tab:"Business information")+": "+c.done+" of "+c.total+" field"+(c.total===1?"":"s")+" completed";
  var rows='<li class="'+(unlocked?"ok":"")+'"><b></b><span>Business information</span><em>'+(unlocked?"Complete":"In progress")+'</em></li>';
  ORDER.forEach(function(k){var st=stat(state[k]),done=submitted[k],t=$("#tab-"+k);
   rows+='<li class="'+(done?"ok":"")+'"><b></b><span>'+esc(FORMS[k].tab)+'</span><em>'+(done?"Submitted":unlocked?(st.done?st.done+" of "+st.total:"Not started"):"Locked")+'</em></li>';
@@ -185,11 +189,19 @@ function syncSubmit(F_){
  if(F_.key==="bi"||F_.sending)return;var btn=$(".submit",F_.el);if(!btn)return;
  var c=stat(F_),left=c.total-c.done;btn.disabled=left>0;
  var n=$(".need",F_.el);if(n)n.textContent=left>0?left+" required field"+(left===1?"":"s")+" left. Submit unlocks when everything is completed.":"Your response goes to the Paytm Intelligence onboarding team."}
+var biCollapsed=false;
+function updateSummary(){var B=state.bi,g=function(id){return get(B,B.by[id])};$("#bisum").textContent=[g("co"),g("pc")?g("pc")+" (SPOC)":"",g("email"),g("mob")].filter(Boolean).join("  \u00B7  ")}
+function setBICollapsed(on,instant){
+ var h=$("#bi"),f=$("#bi-form"),t=$("#bi-toggle");if(!h||!f)return;if(instant)h.classList.add("noanim");
+ biCollapsed=on;h.classList.toggle("collapsed",on);f.inert=on;f.setAttribute("aria-hidden",on?"true":"false");
+ t.setAttribute("aria-expanded",String(!on));$(".bt-l",t).textContent=on?"Expand":"Collapse";$("#bisum").hidden=!on;$(".bi-note",h).hidden=on;if(on)updateSummary();
+ if(instant)setTimeout(function(){h.classList.remove("noanim")},80);
+}
 function needBI(){var d=$("#needbi");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#nbgo").focus()}
 function continueBI(){
  var B=state.bi,first=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!first)first=w});
- if(first){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}gate();first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
- confirmed=true;try{localStorage.setItem(BIOK,"1")}catch(e){}gate();
+ if(first){setBICollapsed(false,true);confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}gate();first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
+ confirmed=true;try{localStorage.setItem(BIOK,"1")}catch(e){}gate();setBICollapsed(true,true);
  $("#step2").scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});var t=$("#tab-"+active);if(t)t.focus({preventScroll:true});
 }
 function biValid(){var B=state.bi;return B.specs.every(function(s){return check(s,get(B,s))===""})}
@@ -211,11 +223,13 @@ function select(key){
 }
 function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
- host.innerHTML='<div class="formhead"><h2><span class="stepn" aria-hidden="true">1</span>Business information</h2><p><span class="req-note">*</span> All fields are required. These details are used for every channel you onboard.</p></div>'+
-  '<form novalidate id="bi-form">'+BI_DEF.groups.map(function(g){return'<div class="sec"><h3>'+esc(g[0])+'</h3><div class="grid">'+g[1].map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
-  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="submit" id="bi-go">Continue</button></div></form>';
+ host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2><span class="stepn" aria-hidden="true">1</span>Business information</h2><p class="bi-note"><span class="req-note">*</span> All fields are required. These details are used for every channel you onboard.</p><p class="bi-sum" id="bisum" hidden></p></div>'+
+  '<button type="button" class="bi-toggle" id="bi-toggle" aria-expanded="true" aria-controls="bi-form"><span class="bt-l">Collapse</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10l4.5-4.5L12.5 10"/></svg></button></div>'+
+  '<form novalidate id="bi-form" class="bi-body"><div class="inner"><div class="bp">'+BI_DEF.groups.map(function(g){return'<div class="sec"><h3>'+esc(g[0])+'</h3><div class="grid">'+g[1].map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
+  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">Clear</button><button class="submit" type="submit" id="bi-go">Continue</button></div></div></div></form>';
  var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:BI_DEF.groups.map(function(g){return{t:g[0],specs:g[1]}}),map:{}};
  state.bi=F_;wireCommon(F_);
+ $("#bi-toggle").addEventListener("click",function(){setBICollapsed(!biCollapsed)});
  $("#bi-clear").addEventListener("click",function(){askClear(F_)});
  F_.el.addEventListener("submit",function(e){e.preventDefault();continueBI()});
  draftRestore(F_);
@@ -273,11 +287,11 @@ function draftRestore(F_){
   else if(typeof v==="string"){var c=$(".c",w);if(!c)return;if(s.type==="select"&&$$("option",c).every(function(op){return op.value!==v}))return;c.value=v}});
  refresh(F_);
 }
-function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}}refresh(F_);draftClear(F_.key)}
+function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}setBICollapsed(false,true)}refresh(F_);draftClear(F_.key)}
 function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?"Your business information will be removed and the channels will be locked again. Your channel answers are kept.":"All the information you have entered in this form will be removed. This cannot be undone.";var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
 $("#nbgo").addEventListener("click",function(){
- closeDlg($("#needbi"));var B=state.bi,bad=B.specs.filter(function(s){return check(s,get(B,s))!==""})[0],w=bad?wrapOf(B,bad):null;
+ closeDlg($("#needbi"));setBICollapsed(false,true);var B=state.bi,bad=B.specs.filter(function(s){return check(s,get(B,s))!==""})[0],w=bad?wrapOf(B,bad):null;
  (w||$("#bi")).scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=w&&$("input,select,textarea",w);if(c)c.focus({preventScroll:true})});
 $("#needbi").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
 document.addEventListener("pi:needbi",needBI);
@@ -311,7 +325,7 @@ function submit(F_,e){
  if(F_.sending||$(".submit",F_.el).disabled)return;
  var first=null,btn=$(".submit",F_.el),note=$("#n-"+F_.key);note.classList.remove("on");
  var B=state.bi,bfirst=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!bfirst)bfirst=w});
- if(bfirst){gate();bfirst.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var bc=$("input,select,textarea",bfirst);if(bc)bc.focus({preventScroll:true});return}
+ if(bfirst){setBICollapsed(false,true);gate();bfirst.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var bc=$("input,select,textarea",bfirst);if(bc)bc.focus({preventScroll:true});return}
  F_.specs.forEach(function(s){var w=wrapOf(F_,s);if(!vis(F_,s)){setErr(w,"");return}var m=w.dataset.busy?"Please wait for the upload to finish.":check(s,get(F_,s));setErr(w,m);if(m&&!first)first=w});
  if(first){first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
 
@@ -366,7 +380,7 @@ ORDER.forEach(function(k){var F_=state[k],m=F_.specs.filter(function(s){return!F
  Object.keys(BI_MAP[k]).forEach(function(id){var t=BI_MAP[k][id];if(t!=="emailAddress"&&!F_.map[norm(t)])m.push(t)});
  if(m.length&&!preview&&(CFG.TARGETS||{})[k]!=="sheet")console.warn("[Onboarding] "+FORMS[k].tab+" form: Google entry IDs missing for "+m.length+" field(s).",m)});
 var t0="whatsapp";try{var sv=localStorage.getItem("pi_onboarding_tab_v1");if(sv&&state[sv])t0=sv}catch(e){}
-select(t0);gate();
+select(t0);gate();if(unlocked)setBICollapsed(true,true);
 })();
 
 /* Header menu, logo, motion preference and one-time welcome dialog */
