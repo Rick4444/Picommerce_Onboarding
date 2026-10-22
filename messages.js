@@ -53,6 +53,8 @@ window.PI_MESSAGES = {
 
     /* ---------- Step 2 heading and locked panel ---------- */
     "step2.title": "Choose your channels",
+    "step3.title": "Submit",
+    "step3.text": "Check your answers, then submit this form to send it to our team.",
     "step2.text": "Complete one or more. Your business information is added automatically.",
     "tabs.label": "Onboarding channel",
     "lock.title": "Channels are locked",
@@ -333,6 +335,8 @@ window.PI_MESSAGES = {
     "intro.title": "Paytm Intelligence में आपका स्वागत है",
     "intro.text": "शुरू करने के लिए कृपया नीचे अपने व्यवसाय की जानकारी भरें। इसके बाद आप WhatsApp, SMS और RCS पर ऑनबोर्ड हो सकते हैं।",
     "step2.title": "अपने चैनल चुनें",
+    "step3.title": "जमा करें",
+    "step3.text": "अपने उत्तर जाँच लें, फिर यह फ़ॉर्म हमारी टीम को भेजने के लिए जमा करें।",
     "step2.text": "एक या अधिक पूरे करें। आपके व्यवसाय की जानकारी अपने-आप जुड़ जाती है।",
     "tabs.label": "ऑनबोर्डिंग चैनल",
     "lock.title": "चैनल लॉक हैं",
@@ -586,6 +590,8 @@ window.PI_MESSAGES = {
     "intro.title": "Paytm Intelligence-এ আপনাকে স্বাগতম",
     "intro.text": "শুরু করতে অনুগ্রহ করে নিচে আপনার ব্যবসার তথ্য পূরণ করুন। এটি শেষ হলে আপনি WhatsApp, SMS এবং RCS-এ অনবোর্ড করতে পারবেন।",
     "step2.title": "আপনার চ্যানেল বেছে নিন",
+    "step3.title": "জমা দিন",
+    "step3.text": "আপনার উত্তর দেখে নিন, তারপর এই ফর্মটি আমাদের টিমকে পাঠাতে জমা দিন।",
     "step2.text": "এক বা একাধিক সম্পূর্ণ করুন। আপনার ব্যবসার তথ্য নিজে থেকেই যুক্ত হয়ে যায়।",
     "tabs.label": "অনবোর্ডিং চ্যানেল",
     "lock.title": "চ্যানেলগুলি বন্ধ আছে",
