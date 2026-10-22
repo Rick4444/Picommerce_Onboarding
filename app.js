@@ -42,7 +42,7 @@ sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
 rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Questionnaire",secs:[
  ["Brand Information",[F("bn","Brand Name to be displayed on RCS"),F("ln","Legal Name of the Brand"),C("uc","Intended use case for RCS messaging",["Promotional","Transactional"]),F("an","Agent Name (Display Name)"),F("ad","Agent Description","textarea",{max:100,hint:"Maximum 100 characters. You can paste your text here."}),F("lg","Agent Logo","imglink",{kind:"logo",title:"Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)"}),F("hr","Hero Image / Banner","imglink",{kind:"hero",title:"Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)"}),F("bc","Brand Colors (Hex Code)","hex",{hint:"Optional. For example #00B9F5",opt:1})]],
  ["Contact Information",[F("cp","Customer Support Phone Number","tel"),F("ce","Customer Support Email","email"),F("cw","Business Website URL","url")]],
- ["Customer Consent (Opt-in)",[F("cons","How do you obtain customer consent before sending RCS messages?","url",{full:1,hint:"Share a publicly accessible link (an image, a screen recording, or a page) that shows how customer consent is obtained."})]],
+ ["Customer Consent (Opt-in)",[F("cons","How do you obtain customer consent before sending RCS messages?","url",{full:1,hint:"Share a publicly accessible link (an image, a screen recording, or a page) that shows how customer consent is obtained explicitly for SMS/RCS/Whatsapp."})]],
  ["Privacy & Compliance",[F("pp","Privacy Policy URL","url"),F("tc","Terms & Conditions URL","url")]]]}
 };
 var ORDER=["whatsapp","sms","rcs"];
