@@ -280,3 +280,8 @@ html{font-size:115%}.wrap{max-width:1480px}
 .langsel{appearance:none;-webkit-appearance:none;padding:9px 32px 9px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E") no-repeat right 12px center;color:#fff;font:600 .85rem var(--body);cursor:pointer;transition:background-color .2s}
 .langsel:hover{background-color:rgba(255,255,255,.18)}.langsel:focus-visible{outline:2px solid #fff;outline-offset:2px}.langsel option{color:#0b2447;background:#fff}
 [dir=rtl] .langsel{padding:9px 14px 9px 32px;background-position:left 12px center}
+
+.bar{flex-wrap:nowrap}.bar-r{flex:none;flex-wrap:nowrap;white-space:nowrap}.bar-r>*{flex:none}#langhost{display:inline-flex}
+.langsel{height:42px;padding-block:0}
+@media (max-width:860px){.tn button{padding:8px 12px}}
+@media (max-width:760px){.tn{display:none}.langsel{height:38px}}
