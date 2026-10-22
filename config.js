@@ -39,11 +39,10 @@ window.PI_CONFIG = {
     ]
   },
 
-  /* If a dropdown that only appears after a "Yes" answer is REQUIRED in the Google Form
-     (WhatsApp: "If Yes, who is the current BSP?"), Google rejects the response when it is hidden.
-     Best fix: make that question optional in Google Forms. Alternative: add an option such as
-     "Not applicable" to the dropdown and put that exact text here. */
-  HIDDEN_SELECT_VALUE: "",
+  /* Value sent for a dropdown that is hidden (WhatsApp: "If Yes, who is the current BSP?" when the client answers No).
+     Add a matching "N/A" choice to that dropdown in the Google Form. Set to "" to send nothing for it
+     (only works if the question is optional in the Google Form). */
+  HIDDEN_SELECT_VALUE: "N/A",
 
   /* Optional: path or URL of the official Pi logo (for example "img/pi-logo.svg").
      Leave empty to show the built-in Pi wordmark. */
