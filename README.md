@@ -98,3 +98,21 @@ matched to columns by header name.
 - Submit one real test entry per channel and confirm it reaches the right response sheet and the usual email arrives.
 - Replace the code-drawn Pi wordmark with the official logo: add the file and set `LOGO_SRC` in `config.js`.
 - Delete test rows from the response sheets.
+
+## WhatsApp Google Form checklist (required for submissions to be saved)
+
+Google silently drops a response if an answer is not one of a question's choices. Before going live, in the WhatsApp form:
+
+1. Add a choice named exactly `N/A` to: Meta Business Manager yes/no, Business Verified, Facebook Business Page yes/no,
+   message type, first fallback, second fallback, billing model, "hosted with another BSP" follow-ups
+   (BSP dropdown, migrate question).
+2. Keep question wording unchanged.
+3. Submit one test from the website, confirm the row appears, then delete it.
+
+## Text and languages (`messages.js`)
+
+Every word the customer sees (headings, labels, hints, notices, buttons, errors, dialogs, answer wording) is in
+`messages.js`. Edit it and refresh; no other file changes. The Google Form question titles that are sent to Google stay in
+`app.js` / `config.js` and must not be translated. To add a language, follow the steps at the top of `messages.js`;
+English, Hindi and Bangla are included; the language switcher is in the top right of the page, and `?lang=hi` or `?lang=bn` in the link forces one. Missing messages fall back to English.
+Upload `messages.js` together with the other files (it is loaded before `app.js`).

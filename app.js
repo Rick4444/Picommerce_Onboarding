@@ -2,15 +2,19 @@
 /* ---------- Language support: reads messages.js ---------- */
 (function(){
 var M=window.PI_MESSAGES||{},langs=M.languages||{en:{name:"English"}},def=M.defaultLang||"en";
+/* Chooses the language: ?lang= in the link, then the saved choice, then the browser language, then the default. */
 function pick(){var q=(location.search.match(/[?&]lang=([\w-]+)/)||[])[1],s="";try{s=localStorage.getItem("pi_lang_v1")||""}catch(e){}
  var nav=(navigator.language||"").toLowerCase().split("-")[0];
  return[q,s,nav].filter(function(l){return l&&M[l]&&langs[l]})[0]||def}
 var lang=pick();
 if(!M.en&&!M[def]){console.error("[Onboarding] messages.js was not loaded. Upload messages.js next to index.html.");var bn=document.createElement("div");bn.setAttribute("role","alert");bn.style.cssText="position:fixed;z-index:99999;left:0;right:0;top:0;padding:10px 16px;background:#b3261e;color:#fff;font:600 14px system-ui,sans-serif;text-align:center";bn.textContent="Setup error: messages.js was not found. Upload messages.js to the same folder as index.html, then refresh.";document.addEventListener("DOMContentLoaded",function(){document.body.appendChild(bn)});if(document.body)document.body.appendChild(bn)}
+/* Looks up one message: current language first, English as the fallback. */
 function raw(k){var v=M[lang]&&M[lang][k];if(v==null)v=M[def]&&M[def][k];return v}
+/* T("key",{name:"x"}) returns the message with {name} filled in. Returns the key itself if the message is missing. */
 function T(k,vars){var v=raw(k);if(v==null)return k;vars=vars||{};if(vars.year==null)vars.year=new Date().getFullYear();
  return String(v).replace(/\{(\w+)\}/g,function(m,n){return vars[n]!=null?vars[n]:m})}
 window.PI_T=T;window.PI_HAS=function(k){return raw(k)!=null};window.PI_LANG=lang;
+/* Fills every data-i18n / data-i18n-attr element in index.html from messages.js and sets the page language. */
 function apply(){
  document.documentElement.lang=lang;document.documentElement.dir=(langs[lang]&&langs[lang].dir)||"ltr";
  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"),function(e){e.textContent=T(e.getAttribute("data-i18n"))});
@@ -33,7 +37,7 @@ if(codes.length>1){var bar=document.getElementById("langhost");if(bar){var sel=d
    form below (see the instructions that came with this file). Keys must be
    the exact question titles. Example: {"Company / Business Name":"entry.123456789"}
    ===================================================================== */
-var T=window.PI_T,HAS=window.PI_HAS,CFG=window.PI_CONFIG||{},FORM_IDS=CFG.FORM_IDS||{},ENTRY=CFG.ENTRY||{},HIDDEN_SELECT_VALUE=CFG.HIDDEN_SELECT_VALUE||"";
+var T=window.PI_T,HAS=window.PI_HAS,CFG=window.PI_CONFIG||{},NET=Object.assign({TIMEOUT_MS:45000,MAX_RETRIES:2,RETRY_BASE_MS:1500,SLOW_MS:8000},(window.PI_CONFIG||{}).NETWORK||{}),FORM_IDS=CFG.FORM_IDS||{},ENTRY=CFG.ENTRY||{},HIDDEN_SELECT_VALUE=CFG.HIDDEN_SELECT_VALUE||"";
 
 var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -89,6 +93,7 @@ var opt=function(o){var k="opt."+o;return HAS(k)?T(k):o};
 
 /* ---------- Validation ---------- */
 var URLRE=/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
+/* Validates one field value. Returns "" when valid, otherwise the message to show. Optional fields may be empty. */
 function check(s,v){
  var empty=Array.isArray(v)?!v.length:!v;
  if(empty&&s.opt)return"";
@@ -115,6 +120,7 @@ function check(s,v){
 var tabs=$("#tabs"),panels=$("#panels"),state={},active="",unlocked=false,confirmed=false,submitted={},BIOK="pi_onboarding_bi_ok_v1";
 try{confirmed=localStorage.getItem(BIOK)==="1"}catch(e){}
 try{submitted=JSON.parse(sessionStorage.getItem("pi_onboarding_done_v1")||"{}")}catch(e){}
+/* Returns the HTML for one question (radio, checkbox, dropdown, text, image link and so on) of form "key". */
 function fieldHTML(key,s){
  var id=key+"-"+s.id,dl=fl(key,s),hh=fh(key,s),lab=esc(dl)+(s.opt?'<span class="optl"> '+esc(T("lbl.optional"))+'</span>':'<span class="req" aria-hidden="true"> *</span>'),
   hint=hh?'<p class="hint" id="'+id+'-h">'+esc(hh)+'</p>':"",
@@ -148,6 +154,7 @@ function fieldHTML(key,s){
  }
  return'<div class="f'+(full?" full":"")+'" data-id="'+s.id+'"><label for="'+id+'">'+lab+'</label>'+hint+ctl+err+'</div>';
 }
+/* Builds one channel form: heading, sections, fields, hidden anti-spam field, buttons and its tab. */
 function build(key){
  var def=FORMS[key],specs=[],by={},secs=[];
  def.secs.forEach(function(list,i){var nk="s."+key+"."+i+".note.title";secs.push({t:T("s."+key+"."+i),specs:list,n:HAS(nk)?[T(nk),T("s."+key+"."+i+".note.text")]:null});list.forEach(function(s){specs.push(s);by[s.id]=s})});
@@ -155,6 +162,7 @@ function build(key){
  var html='<div class="formhead"><h2>'+esc(T("form."+key+".title"))+'</h2><p><span class="req-note">*</span> '+esc(T("form.required"))+' <span class="binote">'+esc(T("form.biNote"))+'</span></p></div>'+
   '<form novalidate autocomplete="off" data-key="'+key+'" id="panel-'+key+'" role="tabpanel" aria-labelledby="tab-'+key+'" hidden>'+
   secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3>'+(sc.n?'<div class="callout" role="note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg><div><strong>'+esc(sc.n[0])+'</strong><p>'+esc(sc.n[1])+'</p></div></div>':'')+'<div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
+  '<input class="hp" type="text" name="hp_x7" tabindex="-1" autocomplete="off" aria-hidden="true">'+
   '<div class="notice" role="alert" id="n-'+key+'">'+esc(T("err.submit"))+'</div>'+
   '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
@@ -176,6 +184,7 @@ function build(key){
 }
 
 /* ---------- State helpers ---------- */
+/* Small helpers: wrapOf = the HTML block of a field, get = its current answer, vis/shown = is it visible, setErr = show an error. */
 function wrapOf(F_,s){return $('[data-id="'+s.id+'"]',F_.el)}
 function get(F_,s){
  var w=wrapOf(F_,s);
@@ -187,19 +196,23 @@ function get(F_,s){
 function vis(F_,s){var g=function(id){return get(F_,F_.by[id])};return(!s.show||s.show(g))&&(!s.enable||s.enable(g))}
 function shown(F_,s){return!s.show||s.show(function(id){return get(F_,F_.by[id])})}
 function setErr(w,m){w.classList.toggle("bad",!!m);$(".err",w).textContent=m;$$("input,select,textarea",w).forEach(function(c){m?c.setAttribute("aria-invalid","true"):c.removeAttribute("aria-invalid")})}
+/* Re-checks the form while the customer types, saves a draft, and validates a field when they leave it. */
 function wireCommon(F_){
  F_.el.addEventListener("input",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("change",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("focusout",function(e){var w=e.target.closest&&e.target.closest("[data-id]");if(!w||w.classList.contains("hide"))return;var s=F_.by[w.dataset.id];
   if(s.type==="radio"||s.type==="check"||s.type==="ack")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
 }
+/* Applies the show/hide rules (for example WABA = No hides the Business Manager ID) and updates Submit and progress. */
 function refresh(F_){
  F_.specs.forEach(function(s){if(!s.show&&!s.enable)return;var w=wrapOf(F_,s),sh=shown(F_,s),v=vis(F_,s);w.classList.toggle("hide",!sh);w.classList.toggle("off",sh&&!v);$$("input,select,textarea",w).forEach(function(c){c.disabled=!v});if(!v)setErr(w,"")});
  syncSubmit(F_);
  $$(".sec",F_.el).forEach(function(sc){var it=$$("[data-id]",sc);sc.classList.toggle("hide",it.length>0&&it.every(function(w){return w.classList.contains("hide")}))});
  paint();
 }
+/* Counts completed and total visible fields; drives the progress bar and the Submit button. */
 function stat(F_){var done=0,total=0;F_.specs.forEach(function(s){if(!vis(F_,s))return;total++;if(check(s,get(F_,s))==="")done++});return{done:done,total:total}}
+/* Redraws the progress panel on the right. */
 function paint(){
  if(!state.bi||!ORDER.every(function(k){return state[k]}))return;
  var cur=unlocked?state[active]:state.bi,c=stat(cur),pct=c.total?Math.round(c.done/c.total*100):0;
@@ -211,12 +224,14 @@ function paint(){
   if(t)t.classList.toggle("done",!!done)});
  $("#chk").innerHTML=rows;
 }
+/* Submit stays disabled until every visible field is valid and the device is online. */
 function syncSubmit(F_){
  if(F_.key==="bi"||F_.sending)return;var btn=$(".submit",F_.el);if(!btn)return;
- var c=stat(F_),left=c.total-c.done;btn.disabled=left>0;
- var n=$(".need",F_.el);if(n)n.textContent=left>0?T(left===1?"need.one":"need.other",{n:left}):T("need.ready")}
+ var c=stat(F_),left=c.total-c.done,off=!online();btn.disabled=left>0||off;
+ var n=$(".need",F_.el);if(n)n.textContent=left>0?T(left===1?"need.one":"need.other",{n:left}):off?T("need.offline"):T("need.ready")}
 var biCollapsed=false;
 function updateSummary(){var B=state.bi,g=function(id){return get(B,B.by[id])};$("#bisum").textContent=[g("co"),g("pc")?T("bi.summary.spoc",{name:g("pc")}):"",g("email"),g("mob")].filter(Boolean).join("  \u00B7  ")}
+/* Collapses or expands the business information card (it collapses after Continue). */
 function setBICollapsed(on,instant){
  var h=$("#bi"),f=$("#bi-form"),t=$("#bi-toggle");if(!h||!f)return;if(instant)h.classList.add("noanim");
  biCollapsed=on;h.classList.toggle("collapsed",on);f.inert=on;f.setAttribute("aria-hidden",on?"true":"false");
@@ -224,6 +239,7 @@ function setBICollapsed(on,instant){
  if(instant)setTimeout(function(){h.classList.remove("noanim")},80);
 }
 function needBI(){var d=$("#needbi");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#nbgo").focus()}
+/* Continue button: validates business information, then unlocks the channels. */
 function continueBI(){
  var B=state.bi,first=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!first)first=w});
  if(first){setBICollapsed(false,true);confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}gate();first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
@@ -232,6 +248,7 @@ function continueBI(){
 }
 function biValid(){var B=state.bi;return B.specs.every(function(s){return check(s,get(B,s))===""})}
 function showActive(){ORDER.forEach(function(k){state[k].box.hidden=!(unlocked&&k===active)})}
+/* Locks or unlocks the channel tabs depending on whether business information is complete and confirmed. */
 function gate(){
  var ok=confirmed&&biValid();unlocked=ok;
  var B=state.bi,filled=B.specs.every(function(s){var v=get(B,s);return Array.isArray(v)?v.length>0:!!v});
@@ -242,11 +259,13 @@ function gate(){
  var st=$("#bistat");st.textContent=ok?T("bi.status.ok"):confirmed?T("bi.status.fix"):filled?T("bi.status.filled"):T("bi.status.empty");st.className="bistat"+(ok?" ok":"");
  showActive();paint();
 }
+/* Switches to a channel tab and remembers the choice. */
 function select(key){
  active=key;try{localStorage.setItem("pi_onboarding_tab_v1",key)}catch(e){}$$(".tn button").forEach(function(b){b.setAttribute("aria-current",b.dataset.k===key)});
  ORDER.forEach(function(k){var on=k===key,t=$("#tab-"+k);t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1});
  showActive();refresh(state[key]);
 }
+/* Builds the shared business information form (step 1). */
 function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
  host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2><span class="stepn" aria-hidden="true">1</span>'+esc(T("bi.title"))+'</h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p></div>'+
@@ -267,6 +286,7 @@ function readAs(file,how,to){return new Promise(function(res,rej){var r=new File
 function imgSize(file){return new Promise(function(res,rej){var u=URL.createObjectURL(file),i=new Image();i.onload=function(){res({w:i.naturalWidth,h:i.naturalHeight,u:u})};i.onerror=function(){URL.revokeObjectURL(u);rej(new Error("type"))};i.src=u})}
 function clearImg(w){w._seq=(w._seq||0)+1;delete w.dataset.busy;$(".c",w).value="";$(".up input",w).value="";if(w._url){URL.revokeObjectURL(w._url);w._url=null}$(".fi",w).hidden=true;var st=$(".st",w);st.textContent="";st.className="st"}
 function imgSet(F_,s,w,mode){s._mode=mode;$$(".seg button",w).forEach(function(b){var on=b.dataset.m===mode;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on)});$(".c",w).hidden=mode==="upload";$(".up",w).hidden=mode!=="upload";clearImg(w);setErr(w,"");refresh(F_)}
+/* Handles a chosen RCS image: checks type, size and dimensions in the browser, then uploads it and stores the returned link. */
 function onFile(F_,s,w,file){
  var seq=(w._seq=(w._seq||0)+1),st=$(".st",w),rule=(CFG.IMAGE_RULES||{})[s.kind]||{};
  function fail(m){if(seq!==w._seq)return;clearImg(w);setErr(w,m);refresh(F_)}
@@ -295,6 +315,7 @@ function resetImages(F_){F_.specs.forEach(function(s){if(s.type==="imglink")imgS
 
 /* ---------- Draft: answers are kept in this browser until the form is submitted or cleared ---------- */
 var DKEY="pi_onboarding_draft_v1_",DAYS=30,saveT={},lastKey="",pendingKey="";
+/* Drafts: answers are saved in this browser (localStorage) for 30 days, until submitted or cleared. Failures are ignored. */
 function draftSave(F_){try{var d={};F_.specs.forEach(function(s){var w=wrapOf(F_,s);
  d[s.id]=s.type==="imglink"?{m:s._mode||"link",v:get(F_,s),n:$(".fn",w).textContent}:get(F_,s)});
  localStorage.setItem(DKEY+F_.key,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
@@ -313,6 +334,7 @@ function draftRestore(F_){
   else if(typeof v==="string"){var c=$(".c",w);if(!c)return;if(s.type==="select"&&$$("option",c).every(function(op){return op.value!==v}))return;c.value=v}});
  refresh(F_);
 }
+/* Empties a form and removes its saved draft. */
 function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}setBICollapsed(false,true)}refresh(F_);draftClear(F_.key)}
 function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?T("clear.bi"):T("clear.form");var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
@@ -326,30 +348,69 @@ $("#cyes").addEventListener("click",function(){var F_=state[pendingKey];closeDlg
 $("#clear").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
 
 /* ---------- Network helpers and loading overlay ---------- */
+/* fetch with a time limit. After NET.TIMEOUT_MS the request is aborted (name "AbortError"). */
 function fetchT(url,opts,ms){
  if(!window.AbortController)return fetch(url,opts);
- var c=new AbortController(),t=setTimeout(function(){c.abort()},ms||30000);opts.signal=c.signal;
+ var c=new AbortController(),t=setTimeout(function(){c.abort()},ms||NET.TIMEOUT_MS);opts.signal=c.signal;
  return fetch(url,opts).then(function(r){clearTimeout(t);return r},function(e){clearTimeout(t);throw e});
 }
 var busyT=null;
+/* Show or hide the full-screen "Submitting" overlay. After NET.SLOW_MS it adds a note about the slow connection. */
 function busy(on){var b=$("#busy"),sl=$("#bslow");if(!b)return;clearTimeout(busyT);sl.hidden=true;b.hidden=!on;document.body.style.overflow=on?"hidden":"";
- if(on){if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();busyT=setTimeout(function(){sl.hidden=false},8000)}}
+ if(on){$("#bd").textContent=T("busy.text");if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();busyT=setTimeout(function(){sl.hidden=false},NET.SLOW_MS)}}
+
+/* ---------- Connection handling ---------- */
+/* online() is false only when the browser is sure there is no connection. */
+function online(){return navigator.onLine!==false}
+/* Banner at the top of the page. kind: "offline" (stays), "back" (hides after 4 s) or "slow" (hides after 8 s). */
+var netT=null;
+function netShow(kind){
+ var b=$("#net");if(!b)return;clearTimeout(netT);
+ $("#net-t").textContent=kind==="offline"?T("net.offline.title"):kind==="back"?T("net.back"):T("net.slow");
+ $("#net-x").textContent=kind==="offline"?T("net.offline.text"):"";
+ b.className="net "+kind;b.hidden=false;
+ if(kind!=="offline")netT=setTimeout(function(){b.hidden=true},kind==="back"?4000:8000)}
+/* Keeps the Submit buttons and the banner in step with the connection. */
+function onNet(){
+ if(online())netShow("back");else netShow("offline");
+ ORDER.forEach(function(k){if(state[k])syncSubmit(state[k])})
+}
+window.addEventListener("offline",onNet);
+window.addEventListener("online",onNet);
+/* Runs an upload or submission and repeats it after a real network failure (not after a timeout, which could
+   create a duplicate). The wait doubles each time and has a random part so many visitors do not retry together. */
+function withRetry(make){
+ var n=0,max=NET.MAX_RETRIES;
+ function go(){return make().catch(function(err){
+  var netFail=err&&err.name==="TypeError";
+  if(netFail&&n<max&&online()){n++;
+   var wait=NET.RETRY_BASE_MS*Math.pow(2,n-1)*(1+Math.random()*.5);
+   $("#bd").textContent=T("busy.retry",{n:n,max:max});
+   return new Promise(function(r){setTimeout(r,wait)}).then(go)}
+  throw err})}
+ return go()}
 
 /* ---------- Send to a Google Sheet (through the Apps Script web app) ---------- */
+/* Builds the row sent to the Google Sheet route: question title -> answer, with "N/A" for hidden and removed questions. */
 function sheetRecord(F_){var rec={},B=state.bi,bm=BI_MAP[F_.key]||{};
  Object.keys(bm).forEach(function(id){var t=bm[id];rec[t==="emailAddress"?"Email Address":t]=get(B,B.by[id])});
  F_.specs.forEach(function(s){var on=vis(F_,s),v=on?get(F_,s):"N/A";if(on&&s.opt&&!v)v="N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});
  (CFG.NA_ANSWERS&&CFG.NA_ANSWERS[F_.key]||[]).forEach(function(t){rec[norm(t)]=CFG.NA_VALUE||"N/A"});return rec}
+/* Posts the row to the Apps Script web app and checks its JSON answer. */
 function sendSheet(F_){
  if(!CFG.SHEET_URL)return Promise.reject(new Error("config"));
  return fetchT(CFG.SHEET_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({form:F_.key,data:sheetRecord(F_)})})
   .then(function(r){return r.json()}).then(function(j){if(!j||!j.ok){console.error("[Onboarding] sheet rejected:",j);throw new Error("srv:"+((j&&j.error)||"unknown"))}})}
 
 /* ---------- Submit ---------- */
+/* Submit: validates everything again, builds the Google Form payload (entry.NNN -> answer, "N/A" for hidden or removed
+   questions), sends it with retries, then shows the thank-you or an error that keeps the answers. */
 function submit(F_,e){
  e.preventDefault();
  if(F_.sending||$(".submit",F_.el).disabled)return;
  var first=null,btn=$(".submit",F_.el),note=$("#n-"+F_.key);note.classList.remove("on");
+ /* No connection: keep everything the customer typed and ask them to reconnect. */
+ if(!online()){note.textContent=T("err.offline");note.classList.add("on");note.scrollIntoView({block:"center"});return}
  var B=state.bi,bfirst=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!bfirst)bfirst=w});
  if(bfirst){setBICollapsed(false,true);gate();bfirst.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var bc=$("input,select,textarea",bfirst);if(bc)bc.focus({preventScroll:true});return}
  F_.specs.forEach(function(s){var w=wrapOf(F_,s);if(!vis(F_,s)){setErr(w,"");return}var m=w.dataset.busy?T("err.uploadWait"):check(s,get(F_,s));setErr(w,m);if(m&&!first)first=w});
@@ -378,21 +439,24 @@ function submit(F_,e){
   p.forEach(function(v,k){var i=document.createElement("input");i.type="hidden";i.name=k;i.value=v;f.appendChild(i)});
   document.body.appendChild(f);f.submit();f.remove();F_.sending=false;btn.classList.remove("sending");$(".lbl",btn).textContent=T("btn.submit");syncSubmit(F_);return}
 
- var send;
- if(preview)send=new Promise(function(r){setTimeout(r,700)});
- else if(toSheet)send=sendSheet(F_);
+ var send,hp=$(".hp",F_.el);
+ if(CFG.HONEYPOT!==false&&hp&&hp.value)send=new Promise(function(r){setTimeout(r,800)});   /* a bot filled the hidden field: pretend success, send nothing */
+ else if(preview)send=new Promise(function(r){setTimeout(r,700)});
+ else if(toSheet)send=withRetry(function(){return sendSheet(F_)});
  else if(miss.length){console.error("Onboarding form is missing Google Form entry IDs for:",miss);send=Promise.reject(new Error("config"))}
- else send=fetchT("https://docs.google.com/forms/d/e/"+FORM_IDS[F_.key]+"/formResponse",{method:"POST",mode:"no-cors",body:p});
+ /* mode "no-cors": Google does not let the page read the reply, so success means "the request was delivered". */
+ else send=withRetry(function(){return fetchT("https://docs.google.com/forms/d/e/"+FORM_IDS[F_.key]+"/formResponse",{method:"POST",mode:"no-cors",body:p})});
 
  send.then(function(){
   busy(false);lastKey=F_.key;draftClear(F_.key);submitted[F_.key]=1;try{sessionStorage.setItem("pi_onboarding_done_v1",JSON.stringify(submitted))}catch(e){}
   var rem=ORDER.filter(function(k){return!submitted[k]}).map(tabName),dn=$("#dnote");dn.hidden=!rem.length;dn.textContent=rem.length?T("done.also",{list:rem.join(T("list.sep"))}):"";paint();
   var dlg=$("#done");typeof dlg.showModal==="function"?dlg.showModal():dlg.setAttribute("open","");$("#ok").focus();
- }).catch(function(err){busy(false);console.error("[Onboarding] submit failed:",err);var em=(err&&err.message)||"",code=(em==="config"?"CFG":em.indexOf("srv:")===0?"SRV-"+em.slice(4).toUpperCase():err&&err.name==="AbortError"?"TIMEOUT":err&&err.name==="SyntaxError"?"RESP":"NET")+"-"+F_.key.toUpperCase();note.textContent=T("err.submit")+T("err.ref",{code:code});note.classList.add("on");note.scrollIntoView({block:"center"})})
+ }).catch(function(err){busy(false);console.error("[Onboarding] submit failed:",err);var em=(err&&err.message)||"",code=(em==="config"?"CFG":em.indexOf("srv:")===0?"SRV-"+em.slice(4).toUpperCase():err&&err.name==="AbortError"?"TIMEOUT":err&&err.name==="SyntaxError"?"RESP":"NET")+"-"+F_.key.toUpperCase();note.textContent=(!online()?T("err.offline"):err&&err.name==="AbortError"?T("err.timeout"):T("err.submit"))+T("err.ref",{code:code});note.classList.add("on");note.scrollIntoView({block:"center"})})
  .then(function(){busy(false);F_.sending=false;btn.classList.remove("sending");$(".lbl",btn).textContent=T("btn.submit");syncSubmit(F_)});
 }
 
 /* ---------- Reset after confirmation ---------- */
+/* After the thank-you is closed: clear the submitted form and move to the next channel that is not submitted yet. */
 function resetAll(){if(!lastKey)return;var k=lastKey;lastKey="";resetForm(state[k]);
  var next=ORDER.filter(function(x){return!submitted[x]})[0];
  if(next){select(next);$("#step2").scrollIntoView({behavior:"auto",block:"start"})}else window.scrollTo({top:0,behavior:"auto"});paint()}
@@ -408,6 +472,15 @@ ORDER.forEach(function(k){var F_=state[k],m=F_.specs.filter(function(s){return!F
  if(m.length&&!preview&&(CFG.TARGETS||{})[k]!=="sheet")console.warn("[Onboarding] "+k+" form: Google entry IDs missing for "+m.length+" field(s).",m)});
 var t0="whatsapp";try{var sv=localStorage.getItem("pi_onboarding_tab_v1");if(sv&&state[sv])t0=sv}catch(e){}
 select(t0);gate();if(unlocked)setBICollapsed(true,true);
+
+/* Connection state at load: show the offline banner, or warn when the browser reports a very slow link or data saver. */
+var cn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+if(!online())netShow("offline");
+else if(cn&&(cn.saveData||/(^|-)2g$/.test(cn.effectiveType||"")))netShow("slow");
+
+/* Offline support (see sw.js). Only on https, and only if enabled in config.js. */
+if(CFG.SERVICE_WORKER!==false&&"serviceWorker" in navigator&&location.protocol==="https:"){
+ window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("[Onboarding] offline support unavailable:",e)})})}
 })();
 
 /* Header menu, logo, motion preference and one-time welcome dialog */

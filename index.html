@@ -1,8 +1,22 @@
 <!DOCTYPE html>
+<!--
+  Paytm Intelligence client onboarding portal.
+  Files (keep all in one folder):
+    index.html    this page: static layout only. All visible words come from messages.js.
+    messages.js   every on-screen message, in English, Hindi and Bangla
+    config.js     form IDs, entry IDs, network and feature settings (the file you normally edit)
+    app.js        forms, validation, connection handling and submission
+    styles.css    all styling
+    sw.js         lets the site open again after a connection loss
+  Release: change the ?v= number on the three links below, and CACHE in sw.js.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Security policy: only this site's own scripts run; the page may talk only to Google (forms, Apps Script, fonts). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://docs.google.com https://script.google.com https://script.googleusercontent.com; form-action https://docs.google.com; frame-src 'none'; object-src 'none'; base-uri 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-i18n="meta.title">Client Onboarding | Paytm Intelligence</title>
 <meta name="description" data-i18n-attr="content:meta.description" content="Onboard to Paytm Intelligence on WhatsApp, SMS or RCS. Complete the form for your channel and our team will get back to you.">
 <meta name="theme-color" content="#002e6e">
@@ -13,14 +27,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3.0.1">
-<script src="config.js?v=3.0.1" defer></script>
-<script src="messages.js?v=3.0.1" defer></script>
-<script src="app.js?v=3.0.1" defer></script>
+<link rel="stylesheet" href="styles.css?v=3.1.0">
+<script src="config.js?v=3.1.0" defer></script>
+<script src="messages.js?v=3.1.0" defer></script>
+<script src="app.js?v=3.1.0" defer></script>
 </head>
 <body>
+<!-- Connection banner: shown by app.js when the device goes offline, comes back, or the network is slow. Text is filled from messages.js. -->
+<div class="net" id="net" role="status" aria-live="polite" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16.2a5 5 0 0 1 7 0M12 20h.01"/><path class="slash" d="M3 3l18 18"/></svg><div><strong id="net-t"></strong><span id="net-x"></span></div></div>
 <noscript><div style="padding:16px;text-align:center;background:#fff3cd;color:#664d03;font:16px system-ui,sans-serif">Please enable JavaScript to use the onboarding form.</div></noscript>
 <a class="skip" href="#main" data-i18n="skip"></a>
+<!-- Header: logo, channel menu, language switcher (added by app.js), welcome text and the animated Pi graphic -->
 <div class="band">
  <div class="wrap bar">
   <div class="logo" id="logo" data-i18n-attr="aria-label:logo.alt" role="img"><span class="pi">Pi</span><span class="by"><span data-i18n="logo.by"></span> <b>PAYTM</b></span></div>
@@ -48,6 +65,7 @@
  </div>
 </div></div>
 
+<!-- Main area: step 1 business form (built by app.js), step 2 channel tabs and forms, and the progress side panel -->
 <main id="main"><div class="wrap">
  <div class="layout">
   <div class="col">
@@ -65,6 +83,7 @@
 
 <footer><div class="wrap"><span data-i18n="footer.copy"></span><span data-i18n="footer.help"></span></div></footer>
 
+<!-- Dialogs. Welcome shows once per browser; busy overlay covers submission; the others confirm actions. -->
 <dialog id="welcome" aria-labelledby="wt"><div class="dlg wl">
  <div class="pi" aria-hidden="true">Pi</div>
  <h2 id="wt" data-i18n="welcome.title"></h2>

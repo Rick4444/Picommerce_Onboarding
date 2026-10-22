@@ -1,4 +1,4 @@
- /* =====================================================================
+/* =====================================================================
    Site configuration. This is the only file you normally need to edit.
    ===================================================================== */
 window.PI_CONFIG = {
@@ -92,5 +92,21 @@ window.PI_CONFIG = {
        ?preview  simulates a successful submit without sending anything
        ?debug    opens Google's real response page in a new tab so you can read its message
      Keep false for the live site. */
-  ENABLE_TEST_MODES: false
+  ENABLE_TEST_MODES: false,
+
+  /* ---------- Connection and load behaviour ----------
+     TIMEOUT_MS     how long one submission may take before the page stops waiting (slow networks need patience).
+     MAX_RETRIES    extra attempts after a network failure (the connection dropped before Google answered).
+                    A timeout is NOT retried, because the first attempt may already have reached Google and a
+                    retry would then create a duplicate response.
+     RETRY_BASE_MS  first wait before a retry; doubles each time, plus a random 0-50% so thousands of visitors
+                    recovering from the same outage do not all retry at the same second.
+     SLOW_MS        after this long the loading overlay explains that the connection is slow. */
+  NETWORK: { TIMEOUT_MS: 45000, MAX_RETRIES: 2, RETRY_BASE_MS: 1500, SLOW_MS: 8000 },
+
+  /* Hidden anti-spam field. Real visitors never see it; bots that fill every field are ignored silently. */
+  HONEYPOT: true,
+
+  /* Lets the site open again with no connection after the first visit (see sw.js). Works on https only. */
+  SERVICE_WORKER: true
 };
