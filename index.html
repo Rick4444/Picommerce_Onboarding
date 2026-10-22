@@ -27,10 +27,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3.4.5">
-<script src="config.js?v=3.4.5" defer></script>
-<script src="messages.js?v=3.4.5" defer></script>
-<script src="app.js?v=3.4.5" defer></script>
+<link rel="stylesheet" href="styles.css?v=3.5.0">
+<script src="config.js?v=3.5.0" defer></script>
+<script src="messages.js?v=3.5.0" defer></script>
+<script src="app.js?v=3.5.0" defer></script>
 </head>
 <body>
 <!-- Connection banner: shown by app.js when the device goes offline, comes back, or the network is slow. Text is filled from messages.js. -->
@@ -51,7 +51,7 @@
   <h1 data-i18n="intro.title"></h1>
   <p data-i18n="intro.text"></p>
   <!-- Three-step strip: app.js marks each step done / current as the customer progresses -->
-  <ol class="hsteps" id="hsteps"><li><b>1</b><span data-i18n="intro.s1"></span></li><li><b>2</b><span data-i18n="intro.s2"></span></li><li><b>3</b><span data-i18n="intro.s3"></span></li></ol>
+  <ol class="hsteps" id="hsteps"><li><span data-i18n="intro.s1"></span></li><li><span data-i18n="intro.s2"></span></li><li><span data-i18n="intro.s3"></span></li></ol>
   <p class="eta" data-i18n="intro.eta"></p>
  </div>
  <div class="art" aria-hidden="true">
@@ -75,7 +75,7 @@
  <div class="layout">
   <div class="col">
    <section class="card bi" id="bi" data-i18n-attr="aria-label:bi.title"><div class="sk" id="sk" role="status"><span class="sr" data-i18n="loading"></span><i class="t"></i><div class="r"><i></i><i></i></div><div class="r"><i></i><i></i></div></div></section>
-   <div class="stephead locked" id="step2"><span class="stepn" aria-hidden="true">2</span><div><h2 data-i18n="step2.title"></h2><p data-i18n="step2.text"></p></div></div>
+   <div class="stephead locked" id="step2"><div><h2 data-i18n="step2.title"></h2><p data-i18n="step2.text"></p></div></div>
    <div class="tabs locked" role="tablist" data-i18n-attr="aria-label:tabs.label" id="tabs"><span class="tab-sk"></span><span class="tab-sk"></span><span class="tab-sk"></span></div>
    <div class="card" id="panels"><div class="lock" id="lock"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg><h3 data-i18n="lock.title"></h3><p data-i18n="lock.text"></p></div></div>
   </div>
