@@ -125,8 +125,13 @@ try{confirmed=localStorage.getItem(BIOK)==="1"}catch(e){}
 try{submitted=JSON.parse(sessionStorage.getItem("pi_onboarding_done_v1")||"{}")}catch(e){}
 /* Returns the HTML for one question (radio, checkbox, dropdown, text, image link and so on) of form "key". */
 function fieldHTML(key,s){
- var id=key+"-"+s.id,dl=fl(key,s),hh=fh(key,s),lab=esc(dl)+(s.opt?'<span class="optl"> '+esc(T("lbl.optional"))+'</span>':'<span class="req" aria-hidden="true"> *</span>'),
-  hint=hh?'<p class="hint" id="'+id+'-h">'+esc(hh)+'</p>':"",
+ var id=key+"-"+s.id,dl=fl(key,s),hh=fh(key,s),
+  /* optional "?" help: shown when messages.js has a help.<form>.<id> text for this question */
+  hk="help."+key+"."+s.id,hp=HAS(hk),
+  qm=hp?'<button type="button" class="qm" aria-expanded="false" aria-controls="'+id+'-help" aria-label="'+esc(T("help.aria",{q:dl}))+'">?</button>':"",
+  helpP=hp?'<p class="helptxt" id="'+id+'-help" hidden>'+esc(T(hk))+'</p>':"",
+  lab=esc(dl)+(s.opt?'<span class="optl"> '+esc(T("lbl.optional"))+'</span>':'<span class="req" aria-hidden="true"> *</span>')+qm,
+  hint=(hh?'<p class="hint" id="'+id+'-h">'+esc(hh)+'</p>':"")+helpP,
   err='<p class="err" id="'+id+'-e" role="alert"></p>';
  if(s.type==="radio"||s.type==="check"){
   var t=s.type==="radio"?"radio":"checkbox";
@@ -170,7 +175,9 @@ function build(key){
   '<input class="hp" type="text" name="hp_x7" tabindex="-1" autocomplete="off" aria-hidden="true">'+
   '<div class="notice" role="alert" id="n-'+key+'">'+esc(T("err.submit"))+'</div>'+
   '<div class="step3"><div><h3>'+esc(T("step3.title"))+'</h3><p>'+esc(T("step3.text"))+'</p></div></div>'+
-  '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div></form>';
+  '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div>'+
+  '<p class="trust"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg><span>'+esc(T("trust.text"))+'</span></p>'+
+  '<p class="dsv" aria-live="polite"></p></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
  // formhead sits outside <form>; keep both inside wrapper
  panels.appendChild(wrap);
@@ -202,12 +209,18 @@ function get(F_,s){
 function vis(F_,s){var g=function(id){return get(F_,F_.by[id])};return(!s.show||s.show(g))&&(!s.enable||s.enable(g))}
 function shown(F_,s){return!s.show||s.show(function(id){return get(F_,F_.by[id])})}
 function setErr(w,m){w.classList.toggle("bad",!!m);$(".err",w).textContent=m;$$("input,select,textarea",w).forEach(function(c){m?c.setAttribute("aria-invalid","true"):c.removeAttribute("aria-invalid")})}
+/* "?" help buttons: tap to show or hide the one-line explanation (works on touch screens, no hover needed). */
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".qm");if(!b)return;e.preventDefault();
+ var p=document.getElementById(b.getAttribute("aria-controls")),open=b.getAttribute("aria-expanded")==="true";
+ b.setAttribute("aria-expanded",String(!open));if(p)p.hidden=open;var f=b.closest(".f");if(f)f.classList.toggle("helpopen",!open)});
 /* Re-checks the form while the customer types, saves a draft, and validates a field when they leave it. */
 function wireCommon(F_){
  F_.el.addEventListener("input",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("change",function(){refresh(F_);saveSoon(F_);if(F_.key==="bi")gate()});
  F_.el.addEventListener("focusout",function(e){var w=e.target.closest&&e.target.closest("[data-id]");if(!w||w.classList.contains("hide"))return;var s=F_.by[w.dataset.id];
-  if(s.type==="radio"||s.type==="check"||s.type==="ack")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)))});
+  if(s.type==="radio"||s.type==="check"||s.type==="ack")return;if(s.type==="imglink"&&!(e.target.classList&&e.target.classList.contains("c")))return;if(get(F_,s)||w.classList.contains("bad"))setErr(w,check(s,get(F_,s)));
+  /* soft green tick once a field holds a valid answer */
+  w.classList.toggle("ok",!!get(F_,s)&&!check(s,get(F_,s)))});
 }
 /* Applies the show/hide rules (for example WABA = No hides the Business Manager ID) and updates Submit and progress. */
 function refresh(F_){
@@ -291,7 +304,7 @@ function buildBI(){
  host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2>'+esc(T("bi.title"))+'<span class="okpill">'+esc(T("bi.confirmed"))+'</span></h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p><button class="clear bi-new" type="button" id="bi-new" hidden>'+esc(T("btn.newBI"))+'</button></div>'+
   '<button type="button" class="bi-toggle" id="bi-toggle" aria-expanded="true" aria-controls="bi-form"><span class="bt-l">'+esc(T("btn.collapse"))+'</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10l4.5-4.5L12.5 10"/></svg></button></div>'+
   '<form novalidate id="bi-form" class="bi-body"><div class="inner"><div class="bp">'+BI_DEF.groups.map(function(g,gi){return'<div class="sec"><h3>'+esc(T("bi.group."+gi))+'</h3><div class="grid">'+g.map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
-  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">'+esc(T("btn.clear"))+'</button><button class="submit" type="submit" id="bi-go">'+esc(T("btn.continue"))+'</button></div></div></div></form>';
+  '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><span class="dsv" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">'+esc(T("btn.clear"))+'</button><button class="submit" type="submit" id="bi-go">'+esc(T("btn.continue"))+'</button></div></div></div></form>';
  var F_={key:"bi",el:$("#bi-form"),box:host,specs:specs,by:by,secs:BI_DEF.groups.map(function(g,gi){return{t:T("bi.group."+gi),specs:g}}),map:{}};
  state.bi=F_;wireCommon(F_);
  $("#bi-toggle").addEventListener("click",function(){setBICollapsed(!biCollapsed)});
@@ -339,7 +352,9 @@ var DKEY="pi_onboarding_draft_v1_",DAYS=30,saveT={},lastKey="",pendingKey="";
 /* Drafts: answers are saved in this browser (localStorage) for 30 days, until submitted or cleared. Failures are ignored. */
 function draftSave(F_){try{var d={};F_.specs.forEach(function(s){var w=wrapOf(F_,s);
  d[s.id]=s.type==="imglink"?{m:s._mode||"link",v:get(F_,s),n:$(".fn",w).textContent}:get(F_,s)});
- localStorage.setItem(DKEY+F_.key,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
+ localStorage.setItem(DKEY+F_.key,JSON.stringify({t:Date.now(),d:d}));draftNote(F_)}catch(e){}}
+/* Small "Draft saved" cue so customers know their answers are kept on this device. */
+function draftNote(F_){var n=F_.el&&$(".dsv",F_.el);if(!n)return;n.textContent=T("draft.saved");n.classList.remove("flash");void n.offsetWidth;n.classList.add("flash")}
 function saveSoon(F_){clearTimeout(saveT[F_.key]);saveT[F_.key]=setTimeout(function(){draftSave(F_)},300)}
 function draftClear(key){clearTimeout(saveT[key]);try{localStorage.removeItem(DKEY+key)}catch(e){}}
 function draftRestore(F_){
