@@ -46,7 +46,7 @@ window.PI_MESSAGES = {
 
     /* ---------- Welcome banner ---------- */
     "intro.live": "Onboarding open",
-    "intro.title": "Welcome to Paytm Intelligence Multilingual",
+    "intro.title": "Welcome to Paytm Intelligence",
     "intro.text": "To get started, please fill in your business information below. Once complete, you can onboard on WhatsApp, SMS and RCS.",
 
     /* ---------- Step 2 heading and locked panel ---------- */
