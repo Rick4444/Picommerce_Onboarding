@@ -127,7 +127,7 @@ function fieldHTML(key,s){
   err='<p class="err" id="'+id+'-e" role="alert"></p>';
  if(s.type==="radio"||s.type==="check"){
   var t=s.type==="radio"?"radio":"checkbox";
-  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts'+(s.opts.length===2&&s.opts.every(function(o){return opt(o).length<=14})?" pair":"")+'">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" autocomplete="off" name="'+s.id+'" value="'+esc(o)+'"><span>'+esc(opt(o))+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
+  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts'+(s.opts.length===2&&s.opts.every(function(o){return opt(o).length<=14})?" pair":"")+'">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" autocomplete="off" name="'+s.id+'" value="'+esc(o)+'"><span><b class="ot">'+esc(opt(o))+'</b>'+(HAS("optd."+o)?'<small class="od">'+esc(T("optd."+o))+'</small>':"")+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
  }
 
  if(s.type==="imglink"){
@@ -225,7 +225,19 @@ function paint(){
   rows+='<li class="'+(done?"ok":"")+'"><b></b><span>'+esc(tabName(k))+'</span><em>'+esc(done?T("prog.submitted"):unlocked?(st.done?T("prog.of",{done:st.done,total:st.total}):T("prog.notstarted")):T("prog.locked"))+'</em></li>';
   if(t)t.classList.toggle("done",!!done)});
  $("#chk").innerHTML=rows;
+ /* Sticky progress bar chips and overall percentage: Business info + 3 channels */
+ var chips='<li class="'+(unlocked?"ok":"cur")+'"><b></b>'+esc(T("prog.bi"))+'</li>',nsub=0;
+ ORDER.forEach(function(k){var st=stat(state[k]),d=submitted[k];if(d)nsub++;
+  var isCur=unlocked&&k===active&&!d;chips+='<li class="'+(d?"ok":isCur?"cur":"")+'"><b></b>'+esc(tabName(k))+'<em>'+esc(d?"\u2713":isCur?st.done+"/"+st.total:"")+'</em></li>'});
+ var all=Math.round(((unlocked?1:0)+nsub)/(1+ORDER.length)*100);
+ $("#sb-chips").innerHTML=chips;var cc=$("#sb-chips"),cu=$("li.cur:last-child,li.cur",cc);if(cu&&cc.scrollWidth>cc.clientWidth)cc.scrollLeft=Math.max(0,cu.offsetLeft-cc.clientWidth/2+cu.offsetWidth/2);$("#sb-pct").textContent=all+"%";$("#sb-bar").style.width=all+"%";
+ /* Hero step strip: step 1 done when business info confirmed, 2 when any channel submitted, 3 when all submitted */
+ var dn=[unlocked,nsub>0,nsub===ORDER.length],seen=false;
+ $$("#hsteps li").forEach(function(li,i){li.classList.toggle("done",dn[i]);var cur=!dn[i]&&!seen;if(cur)seen=true;li.classList.toggle("cur",cur)});
 }
+/* The sticky bar slides in once the header has scrolled out of view. */
+(function(){var sb=$("#sbar"),tk=0;function on(){tk=0;var show=window.scrollY>300;sb.classList.toggle("show",show);sb.setAttribute("aria-hidden",String(!show))}
+ window.addEventListener("scroll",function(){if(!tk)tk=requestAnimationFrame(on)},{passive:true});on()})();
 /* Submit stays disabled until every visible field is valid and the device is online. */
 function syncSubmit(F_){
  if(F_.key==="bi"||F_.sending)return;var btn=$(".submit",F_.el);if(!btn)return;
