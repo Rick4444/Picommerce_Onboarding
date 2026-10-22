@@ -408,3 +408,32 @@ h1,h2,h3,h4{text-wrap:balance}p{text-wrap:pretty}
  .opt span{padding:13px 12px;column-gap:10px}
 }
 @media (max-width:520px){.opts:has(.od){grid-template-columns:1fr}}
+
+/* =====================================================================
+   v3.4.2 consistency pass
+   One tick style everywhere: green circle, white tick, centred (SVG background so it is always centred).
+   Step numbers stay visible; a small tick badge marks a completed step.
+   ===================================================================== */
+:root{--tick:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.4l2.8 2.8L12 5.4'/%3E%3C/svg%3E")}
+
+/* numbered steps (Business information heading, hero strip): number stays, tick badge sits on the corner */
+.bi.done .stepn,.hsteps li.done b{font-size:inherit;color:#fff}
+.bi.done .stepn{background:var(--navy);position:relative;overflow:visible}
+.bi.done .stepn::after,.hsteps li.done b::after{content:"";position:absolute;right:-5px;bottom:-5px;left:auto;top:auto;width:15px;height:15px;border:2px solid #fff;border-radius:50%;background:var(--ok) var(--tick) center/11px no-repeat;transform:none}
+.hsteps li b{position:relative;overflow:visible}
+.hsteps li.done b{background:rgba(255,255,255,.16)}
+.hsteps li.done b::after{border-color:#1b4a9a}
+.hsteps li.cur b::after{display:none}
+
+/* tick circles elsewhere: progress list, sticky chips, channel tabs */
+.chk li.ok b::after{display:none}
+.chk li.ok b,.sb-chips li.ok b,.tab.done .tkd{background:var(--ok) var(--tick) center/74% no-repeat;border-color:var(--ok)}
+.sb-chips li b{width:14px;height:14px}
+.tab.done .tkd::after{display:none}
+
+/* Yes / No and every other tile: marker and text share one centre line */
+.opt span{align-content:center;align-items:center}
+.opt span::before{align-self:center;margin-top:0}
+.opt span:has(.od){align-items:start}.opt span:has(.od)::before{align-self:start;margin-top:2px}
+.opt span:not(:has(.od)){display:flex;align-items:center}
+.hsteps li.done b{font-size:.75rem}
