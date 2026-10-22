@@ -53,7 +53,7 @@ var ORDER=["whatsapp","sms","rcs"];
 var BI_DEF={title:"Business Information",groups:[
  ["SPOC details",[F("pc","Name","text",{hint:"SPOC Name",auto:"name"}),F("email","Email","email",{hint:"SPOC Email",auto:"email"}),
   F("mob","Contact Number","tel",{hint:"SPOC Contact Number",auto:"tel"}),F("des","Designation","text",{hint:"SPOC Designation",auto:"organization-title"})]],
- ["Business details",[F("co","Company / Business Name","text",{auto:"organization"}),F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Business Website","url",{auto:"url"}),F("am","Account Manager Name","text",{hint:"Paytm Sales SPOC Name",auto:"off"})]]]};
+ ["Business details",[F("co","Company Name","text",{hint:"Business name",auto:"organization"}),F("reg","Registered Business Name","text",{hint:"As per legal documents"}),F("web","Website","url",{hint:"Home page of the business website we are onboarding",auto:"url"}),F("am","Account Manager Name","text",{hint:"Paytm Sales SPOC Name",auto:"off"})]]]};
 BI_DEF.specs=[].concat.apply([],BI_DEF.groups.map(function(g){return g[1]}));
 var BI_MAP={
  whatsapp:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
@@ -142,8 +142,8 @@ function build(key){
  F_.el.hidden=false;
  var b=document.createElement("button");
  b.className="tab";b.type="button";b.setAttribute("role","tab");b.id="tab-"+key;b.style.setProperty("--c",def.color);b.setAttribute("aria-controls","panel-"+key);
- b.disabled=true;b.innerHTML="<i></i>"+esc(def.tab)+'<span class="tkd" aria-hidden="true"></span>';b.addEventListener("click",function(){select(key)});
- b.addEventListener("keydown",function(e){var i=ORDER.indexOf(key),n=e.key==="ArrowRight"?i+1:e.key==="ArrowLeft"?i-1:null;if(n===null)return;e.preventDefault();n=(n+3)%3;select(ORDER[n]);$("#tab-"+ORDER[n]).focus()});
+ b.setAttribute("aria-disabled","true");b.innerHTML="<i></i>"+esc(def.tab)+'<span class="tkd" aria-hidden="true"></span>';b.addEventListener("click",function(){if(!unlocked){needBI();return}select(key)});
+ b.addEventListener("keydown",function(e){var i=ORDER.indexOf(key),n=e.key==="ArrowRight"?i+1:e.key==="ArrowLeft"?i-1:null;if(n===null)return;e.preventDefault();if(!unlocked)return;n=(n+3)%3;select(ORDER[n]);$("#tab-"+ORDER[n]).focus()});
  tabs.appendChild(b);
 }
 
@@ -185,6 +185,7 @@ function syncSubmit(F_){
  if(F_.key==="bi"||F_.sending)return;var btn=$(".submit",F_.el);if(!btn)return;
  var c=stat(F_),left=c.total-c.done;btn.disabled=left>0;
  var n=$(".need",F_.el);if(n)n.textContent=left>0?left+" required field"+(left===1?"":"s")+" left. Submit unlocks when everything is completed.":"Your response goes to the Paytm Intelligence onboarding team."}
+function needBI(){var d=$("#needbi");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#nbgo").focus()}
 function continueBI(){
  var B=state.bi,first=null;B.specs.forEach(function(s){var w=wrapOf(B,s),m=check(s,get(B,s));setErr(w,m);if(m&&!first)first=w});
  if(first){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}gate();first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
@@ -195,11 +196,12 @@ function biValid(){var B=state.bi;return B.specs.every(function(s){return check(
 function showActive(){ORDER.forEach(function(k){state[k].box.hidden=!(unlocked&&k===active)})}
 function gate(){
  var ok=confirmed&&biValid();unlocked=ok;
- $$("#tabs .tab").forEach(function(t){t.disabled=!ok;t.classList.toggle("locked",!ok);t.title=ok?"":"Fill in the business information and click Continue"});
+ var B=state.bi,filled=B.specs.every(function(s){var v=get(B,s);return Array.isArray(v)?v.length>0:!!v});
+ $$("#tabs .tab").forEach(function(t){t.setAttribute("aria-disabled",String(!ok));t.classList.toggle("locked",!ok);t.title=ok?"":"Fill in the business information and click Continue"});
  $$(".tn button").forEach(function(b){b.classList.toggle("locked",!ok)});
  $("#tabs").classList.toggle("locked",!ok);$("#step2").classList.toggle("locked",!ok);$("#lock").hidden=ok;
- $("#bi").classList.toggle("done",ok);
- var st=$("#bistat");st.textContent=ok?"Business information confirmed. Choose your channels below.":confirmed?"Please correct the highlighted details to keep the channels unlocked.":"Fill in all fields, then click Continue to unlock the channels.";st.className="bistat"+(ok?" ok":"");
+ $("#bi").classList.toggle("done",ok);$("#bi-go").hidden=!filled;
+ var st=$("#bistat");st.textContent=ok?"Business information confirmed. Choose your channels below.":confirmed?"Please correct the highlighted details to keep the channels unlocked.":filled?"All fields are filled. Click Continue to unlock the channels.":"Fill in all fields to continue.";st.className="bistat"+(ok?" ok":"");
  showActive();paint();
 }
 function select(key){
@@ -274,6 +276,11 @@ function draftRestore(F_){
 function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}}refresh(F_);draftClear(F_.key)}
 function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?"Your business information will be removed and the channels will be locked again. Your channel answers are kept.":"All the information you have entered in this form will be removed. This cannot be undone.";var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
+$("#nbgo").addEventListener("click",function(){
+ closeDlg($("#needbi"));var B=state.bi,bad=B.specs.filter(function(s){return check(s,get(B,s))!==""})[0],w=bad?wrapOf(B,bad):null;
+ (w||$("#bi")).scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=w&&$("input,select,textarea",w);if(c)c.focus({preventScroll:true})});
+$("#needbi").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
+document.addEventListener("pi:needbi",needBI);
 $("#cno").addEventListener("click",function(){closeDlg($("#clear"))});
 $("#cyes").addEventListener("click",function(){var F_=state[pendingKey];closeDlg($("#clear"));if(F_){resetForm(F_);if(F_.key==="bi")gate();F_.box.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})}});
 $("#clear").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
@@ -366,7 +373,7 @@ select(t0);gate();
 (function(){
 "use strict";
 var LOGO_SRC=(window.PI_CONFIG&&window.PI_CONFIG.LOGO_SRC)||"";
-document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("click",function(){var t=document.getElementById("tab-"+b.dataset.k);if(t.disabled){document.getElementById("bi").scrollIntoView({behavior:"smooth",block:"start"});return}t.click();document.getElementById("tabs").scrollIntoView({behavior:"smooth",block:"center"})})});
+document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("click",function(){var t=document.getElementById("tab-"+b.dataset.k);if(t.getAttribute("aria-disabled")==="true"){document.dispatchEvent(new Event("pi:needbi"));return}t.click();document.getElementById("tabs").scrollIntoView({behavior:"smooth",block:"center"})})});
 (function(){
  var l=document.getElementById("logo");
  if(LOGO_SRC){var i=new Image();i.alt="Pi by Paytm";i.onload=function(){l.removeAttribute("role");l.removeAttribute("aria-label");l.innerHTML="";l.appendChild(i)};i.src=LOGO_SRC}
