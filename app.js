@@ -85,7 +85,7 @@ var BI_DEF={groups:[
  [F("co","Company Name","text",{auto:"organization"}),F("reg","Registered Business Name","text"),F("web","Website","url",{auto:"url"}),F("am","Account Manager Name","text",{auto:"off"})]]};
 BI_DEF.specs=[].concat.apply([],BI_DEF.groups);
 var BI_MAP={
- whatsapp:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",mob:"Mobile Number"},
+ whatsapp:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name (as per legal documents)",web:"Business Website",pc:"Primary Business Contact Name",des:"Designation",mob:"Mobile Number"},
  sms:{am:"Account Manager Name",email:"emailAddress",co:"Company / Business Name",reg:"Registered Business Name",pc:"Primary Contact Name",mob:"Mobile Number"},
  rcs:{am:"Account Manager Name",email:"emailAddress",pc:"SPOC Name",des:"SPOC Designation",mob:"SPOC Mobile Number"}
 };
@@ -453,9 +453,11 @@ function submit(F_,e){
  if(first){first.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});var c=$("input,select,textarea",first);if(c)c.focus({preventScroll:true});return}
 
  var toSheet=((CFG.TARGETS||{})[F_.key]||"form")==="sheet";
- var p=new URLSearchParams(),miss=[];
+ var p=new URLSearchParams(),miss=[],noNA=!!(CFG.SEND_NA&&CFG.SEND_NA[F_.key]===false);
  F_.specs.forEach(function(s){
   var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=F_.map[norm(s.title||s.label)];
+  /* Forms with SEND_NA:false: a hidden question, or an optional one left empty, is not sent at all */
+  if(noNA&&(!shown||(s.opt&&!v)))return;
   if(shown&&s.opt&&!v)v="N/A";
   if(!shown&&s.type==="select"){if(!HIDDEN_SELECT_VALUE)return;v=HIDDEN_SELECT_VALUE}
   if(!key){miss.push(s.label);return}
