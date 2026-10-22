@@ -447,3 +447,27 @@ h1,h2,h3,h4{text-wrap:balance}p{text-wrap:pretty}
 .step3 p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
 .step3 .stepn{margin-top:0}
 .step3+.actions{border-top:0;margin-top:0;padding-top:0}
+
+/* =====================================================================
+   v3.4.4 step-heading system: all three step headings share one size, one badge and one baseline.
+   Completion is shown as an inline "Confirmed" pill / trailing tick, not a badge hanging off the number.
+   ===================================================================== */
+.stepn,.bi .stepn,.bi.done .stepn,.stephead .stepn,.step3 .stepn{width:32px;height:32px;margin:0;font:700 .92rem/1 var(--body);background:var(--navy)}
+.bi.done .stepn::after,.hsteps li.done b::after{display:none}
+.stephead.locked .stepn{background:#9fb1d3}
+.bi .formhead h2,.stephead h2,.step3 h3{font:700 1.25rem/32px var(--head);letter-spacing:-.02em;min-height:32px;margin:0}
+.step3 h3{display:block}
+.stephead p,.step3 p,.bi .bi-note{margin-top:4px}
+.okpill{display:none;align-items:center;gap:6px;margin-left:4px;padding:3px 10px 3px 6px;border-radius:99px;background:#e8f7ef;color:#0b6b3b;font:600 .78rem/1 var(--body);letter-spacing:0;white-space:nowrap}
+.okpill::before{content:"";width:16px;height:16px;border-radius:50%;background:var(--ok) var(--tick) center/74% no-repeat}
+.bi.done .okpill{display:inline-flex}
+/* business summary: separate items instead of one dotted line, so wrapping never leaves a stray dot */
+.bi-sum{display:flex;flex-wrap:wrap;gap:2px 20px;margin:6px 0 0}
+.bi-sum span{white-space:nowrap}
+/* hero strip: trailing tick after a finished step */
+.hsteps li.done::after{content:"";width:16px;height:16px;margin-left:2px;border-radius:50%;background:var(--ok) var(--tick) center/74% no-repeat}
+@media (max-width:760px){.bi-sum span{white-space:normal}}
+
+/* v3.4.5: confirm-checkbox row keeps its text and asterisk together (earlier flex rule had pushed the * to the far right) */
+.opt.ack span:not(:has(.od)),.opt.ack span{display:block;position:relative;padding:12px 16px 12px 46px;min-height:48px}
+.opt.ack span::before{position:absolute;left:15px;top:50%;margin-top:-9px}
