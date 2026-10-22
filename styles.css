@@ -272,3 +272,5 @@ html{font-size:115%}.wrap{max-width:1480px}
 .ring,.spin,.st.busy::before{animation:sp 1.6s linear infinite!important}
 *,*::before,*::after{animation:none!important;transition:none!important}.tick svg{stroke-dashoffset:0}html{scroll-behavior:auto}
 }
+
+.optl{font-weight:500;color:var(--mut,#6b7a90);font-size:.85em}.cnt{display:block;text-align:right;font-size:.8rem;color:var(--mut,#6b7a90);margin-top:4px}
