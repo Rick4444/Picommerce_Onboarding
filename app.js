@@ -28,6 +28,7 @@ var S=function(id,l,opts,o){return F(id,l,"select",Object.assign({opts:opts},o))
 var is=function(id,v){return function(g){return g(id)===v}};
 var BILL=R("bill","Preferred Billing Model",["Prepaid","Postpaid"]);
 
+var hasSms=function(t){return function(g){var v=g("st");return Array.isArray(v)&&v.indexOf(t)>-1}};
 var hasW=is("waba","Yes"),hostY=is("host","Yes"),bspOther=function(g){return g("host")==="Yes"&&g("bsp")==="Other"};
 var FORMS={
 whatsapp:{tab:"WhatsApp",color:"#25d366",title:"WhatsApp Business API (WABA) Onboarding Questionnaire",secs:[
@@ -35,12 +36,9 @@ whatsapp:{tab:"WhatsApp",color:"#25d366",title:"WhatsApp Business API (WABA) Onb
  ["Meta Business Account",[F("bmid","Business Manager (BM) ID","text",{title:"If Yes, please share the Business Manager (BM) ID",show:hasW}),F("fbu","Facebook Page URL","url",{title:"If Yes, please share the Facebook Page URL",show:hasW}),F("adm","Admin access","ack",{title:"Does the client have Admin access to the Business Manager?",note:"The SPOC must have full admin access to the Meta Business Manager at the time of onboarding. Without it, we cannot complete the setup.",ackLabel:"I confirm the SPOC will have full admin access"})]],
  ["WhatsApp Business Details",[R("use","Is the client currently using",["WhatsApp Business App","WhatsApp Business API","Personal WhatsApp"]),F("wan","WhatsApp Business Number","tel"),R("host","Is the WhatsApp number currently hosted with another BSP?",YN),S("bsp","If Yes, who is the current BSP?",["Karix","Gupshup","WATI","Interakt","Infobip","Netcore","Other"],{show:hostY}),F("bspo","If \"Other\" BSP, please specify","text",{show:bspOther}),R("mig","Does the client want to migrate the existing WhatsApp number to Paytm?",YN,{show:hostY})]]]},
 sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
- ["DLT Registration",[R("dlt","Is the business registered on the DLT platform?",YN),F("pe","Principal Entity (PE) ID","text",{show:is("dlt","Yes")}),S("op","Which DLT operator is the business registered with?",["Airtel","Jio","Vodafone Idea (Vi)","BSNL","Smart Ping"])]],
- ["Sender ID (Header)",[R("has","Does the client already have approved Sender IDs (Headers)?",YN),F("sid","If yes, please provide the Sender ID(s) (Numeric & alphabetical both)","text",{show:is("has","Yes"),full:1}),F("ns","How many Sender IDs are required?","number")]],
- ["Messaging Requirements",[C("st","What type of SMS will be sent?",["OTP","Transactional","Promotional"])]],
- ["Integration Requirements",[S("trg","How will SMS be triggered?",["API","CSV upload","CRM - CleverTap, MoEngage, WebEngage etc."]),R("api","Does the client require API integration?",YN),R("dlr","Does the client require delivery reports (DLR)?",YN)]],
- ["Fallback & Multi-Channel Communication",[R("f1","What should be the first fallback?",["WhatsApp","RCS","Fallback not needed"]),R("f2","What should be the second fallback?",["RCS","WhatsApp","Fallback not needed"])]],
- ["Commercial Information",[F("go","Expected Go-Live Date","date"),BILL]]]},
+ ["DLT Registration",[F("pe","Principal Entity (PE) ID","text"),S("op","Which DLT operator is the business registered with?",["Airtel","Jio","Vodafone Idea (Vi)","BSNL","Smart Ping","Tata Tele"])],["DLT registration is mandatory","The business must be registered on the DLT platform before SMS can be sent. Please share the Principal Entity (PE) ID and the operator you registered with."]],
+ ["Messaging Requirements",[C("st","What type of SMS will be sent?",["Transactional","Promotional"])]],
+ ["Sender ID (Header)",[F("sidt","Approved Transactional Sender ID(s)","text",{show:hasSms("Transactional"),full:1,raw:1,hint:"Sender ID(s) approved for transactional messages"}),F("sidp","Approved Promotional Sender ID(s)","text",{show:hasSms("Promotional"),full:1,raw:1,hint:"Sender ID(s) approved for promotional messages"})],["Sender IDs are case sensitive","Enter each Sender ID exactly as it is approved on the DLT platform, with the same capital and small letters. For example, PAYTMI and PaytmI are different Sender IDs. Separate more than one with commas."]]]},
 rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Questionnaire",secs:[
  ["Brand Information",[F("bn","Brand Name to be displayed on RCS"),F("ln","Legal Name of the Brand"),C("uc","Intended use case for RCS messaging",["Promotional","Transactional","OTP"]),F("an","Agent Name (Display Name)"),F("ad","Agent Description","textarea"),F("lg","Agent Logo","imglink",{kind:"logo",title:"Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)"}),F("hr","Hero Image / Banner","imglink",{kind:"hero",title:"Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)"}),F("bc","Brand Colors (Hex Code)","hex",{hint:"For example #00B9F5"})]],
  ["Contact Information",[F("cp","Customer Support Phone Number","tel"),F("cpl","Display Label for Phone Number"),F("ce","Customer Support Email","email"),F("cel","Display Label for Email"),F("cw","Business Website URL","url"),F("cwl","Display Label for Website")]],
@@ -118,17 +116,17 @@ function fieldHTML(key,s){
   var it=s.type==="email"?"email":s.type==="tel"?"tel":s.type==="date"?"date":"text",
    im=s.type==="url"?' inputmode="url"':s.type==="number"?' inputmode="numeric"':"",
    mn=s.type==="date"?' min="'+today+'"':"",ac=s.auto?' autocomplete="'+s.auto+'"':' autocomplete="off"';
-  ctl='<input class="c" id="'+id+'" name="'+s.id+'" type="'+it+'"'+im+mn+ac+(it==='text'?' maxlength="300"':'')+(s.enable?' placeholder="Only needed if you select Other"':'')+dby+'>';
+  ctl='<input class="c" id="'+id+'" name="'+s.id+'" type="'+it+'"'+im+mn+ac+(it==='text'?' maxlength="300"':'')+(s.raw?' autocapitalize="off" autocorrect="off" spellcheck="false"':'')+(s.enable?' placeholder="Only needed if you select Other"':'')+dby+'>';
  }
  return'<div class="f'+(full?" full":"")+'" data-id="'+s.id+'"><label for="'+id+'">'+lab+'</label>'+hint+ctl+err+'</div>';
 }
 function build(key){
  var def=FORMS[key],specs=[],by={},secs=[];
- def.secs.forEach(function(sc){var list=sc[1];secs.push({t:sc[0],specs:list});list.forEach(function(s){specs.push(s);by[s.id]=s})});
+ def.secs.forEach(function(sc){var list=sc[1];secs.push({t:sc[0],specs:list,n:sc[2]});list.forEach(function(s){specs.push(s);by[s.id]=s})});
  var map={};Object.keys(ENTRY[key]||{}).forEach(function(k){map[norm(k)]=ENTRY[key][k]});
  var html='<div class="formhead"><h2>'+esc(def.title)+'</h2><p><span class="req-note">*</span> All fields are required. <span class="binote">Your business information from Step 1 is included automatically.</span></p></div>'+
   '<form novalidate autocomplete="off" data-key="'+key+'" id="panel-'+key+'" role="tabpanel" aria-labelledby="tab-'+key+'" hidden>'+
-  secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3><div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
+  secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3>'+(sc.n?'<div class="callout" role="note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg><div><strong>'+esc(sc.n[0])+'</strong><p>'+esc(sc.n[1])+'</p></div></div>':'')+'<div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
   '<div class="notice" role="alert" id="n-'+key+'">We could not submit your form right now. Please try again in a few minutes.</div>'+
   '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">Submit</span></button><button class="clear" type="button" data-clear>Clear form</button><span class="small need" aria-live="polite">Your response goes to the Paytm Intelligence onboarding team.</span></div></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
@@ -334,7 +332,6 @@ function submit(F_,e){
  F_.specs.forEach(function(s){
   var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=F_.map[norm(s.title||s.label)];
   if(!shown&&s.type==="select"){if(!HIDDEN_SELECT_VALUE)return;v=HIDDEN_SELECT_VALUE}
-  if(!shown&&s.type==="url")return; /* optional link question: leave blank so a URL rule in the form cannot reject "N/A" */
   if(!key){miss.push(s.label);return}
   if(s.type==="date"){var d=v.split("-");p.append(key+"_year",d[0]);p.append(key+"_month",d[1]);p.append(key+"_day",d[2])}
   else if(Array.isArray(v)){v.forEach(function(x){p.append(key,x)});p.append(key+"_sentinel","")}
