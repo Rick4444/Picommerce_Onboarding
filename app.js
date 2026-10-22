@@ -166,7 +166,7 @@ function build(key){
   secs.map(function(sc){return'<div class="sec"><h3>'+esc(sc.t)+'</h3>'+(sc.n?'<div class="callout" role="note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg><div><strong>'+esc(sc.n[0])+'</strong><p>'+esc(sc.n[1])+'</p></div></div>':'')+'<div class="grid">'+sc.specs.map(function(s){return fieldHTML(key,s)}).join("")+'</div></div>'}).join("")+
   '<input class="hp" type="text" name="hp_x7" tabindex="-1" autocomplete="off" aria-hidden="true">'+
   '<div class="notice" role="alert" id="n-'+key+'">'+esc(T("err.submit"))+'</div>'+
-  '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div></form>';
+  '<div class="actions"><button class="submit" type="submit" disabled><span class="spin"></span><span class="lbl">'+esc(T("btn.submit"))+'</span></button><button class="clear" type="button" data-another>'+esc(T("btn.another"))+'</button><button class="clear" type="button" data-clear>'+esc(T("btn.clearForm"))+'</button><span class="small need" aria-live="polite">'+esc(T("need.ready"))+'</span></div></form>';
  var wrap=document.createElement("section");wrap.className="fw";wrap.dataset.key=key;wrap.hidden=true;wrap.innerHTML=html;
  // formhead sits outside <form>; keep both inside wrapper
  panels.appendChild(wrap);
@@ -176,6 +176,7 @@ function build(key){
  F_.el.addEventListener("submit",function(e){submit(F_,e)});
  wireImages(F_);
  $("[data-clear]",wrap).addEventListener("click",function(){askClear(F_)});
+ $("[data-another]",wrap).addEventListener("click",function(){askClear(F_,"another")});
  draftRestore(F_);
  F_.el.hidden=false;
  var b=document.createElement("button");
@@ -258,6 +259,8 @@ function gate(){
  $$(".tn button").forEach(function(b){b.classList.toggle("locked",!ok)});
  $("#tabs").classList.toggle("locked",!ok);$("#step2").classList.toggle("locked",!ok);$("#lock").hidden=ok;
  $("#bi").classList.toggle("done",ok);$("#bi-go").hidden=!filled;
+ /* once the business information is confirmed, "Clear" is replaced by "Fill different business info" (full restart) */
+ $("#bi-clear").hidden=ok;$("#bi-new").hidden=!ok;
  var st=$("#bistat");st.textContent=ok?T("bi.status.ok"):confirmed?T("bi.status.fix"):filled?T("bi.status.filled"):T("bi.status.empty");st.className="bistat"+(ok?" ok":"");
  showActive();paint();
 }
@@ -270,7 +273,7 @@ function select(key){
 /* Builds the shared business information form (step 1). */
 function buildBI(){
  var host=$("#bi"),specs=BI_DEF.specs,by={};specs.forEach(function(s){by[s.id]=s});
- host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2><span class="stepn" aria-hidden="true">1</span>'+esc(T("bi.title"))+'</h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p></div>'+
+ host.innerHTML='<div class="formhead bi-head"><div class="bi-ht"><h2><span class="stepn" aria-hidden="true">1</span>'+esc(T("bi.title"))+'</h2><p class="bi-note"><span class="req-note">*</span> '+esc(T("bi.note"))+'</p><p class="bi-sum" id="bisum" hidden></p><button class="clear bi-new" type="button" id="bi-new" hidden>'+esc(T("btn.newBI"))+'</button></div>'+
   '<button type="button" class="bi-toggle" id="bi-toggle" aria-expanded="true" aria-controls="bi-form"><span class="bt-l">'+esc(T("btn.collapse"))+'</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10l4.5-4.5L12.5 10"/></svg></button></div>'+
   '<form novalidate id="bi-form" class="bi-body"><div class="inner"><div class="bp">'+BI_DEF.groups.map(function(g,gi){return'<div class="sec"><h3>'+esc(T("bi.group."+gi))+'</h3><div class="grid">'+g.map(function(s){return fieldHTML("bi",s)}).join("")+'</div></div>'}).join("")+
   '<div class="actions"><span class="bistat" id="bistat" aria-live="polite"></span><button class="clear" type="button" id="bi-clear">'+esc(T("btn.clear"))+'</button><button class="submit" type="submit" id="bi-go">'+esc(T("btn.continue"))+'</button></div></div></div></form>';
@@ -278,6 +281,7 @@ function buildBI(){
  state.bi=F_;wireCommon(F_);
  $("#bi-toggle").addEventListener("click",function(){setBICollapsed(!biCollapsed)});
  $("#bi-clear").addEventListener("click",function(){askClear(F_)});
+ $("#bi-new").addEventListener("click",function(){askClear(F_,"newbi")});
  F_.el.addEventListener("submit",function(e){e.preventDefault();continueBI()});
  draftRestore(F_);
 }
@@ -338,7 +342,13 @@ function draftRestore(F_){
 }
 /* Empties a form and removes its saved draft. */
 function resetForm(F_){F_.el.reset();resetImages(F_);F_.specs.forEach(function(s){setErr(wrapOf(F_,s),"")});var n_=$("#n-"+F_.key);if(n_)n_.classList.remove("on");if(F_.key==="bi"){confirmed=false;try{localStorage.removeItem(BIOK)}catch(e){}setBICollapsed(false,true)}refresh(F_);draftClear(F_.key)}
-function askClear(F_){pendingKey=F_.key;$("#clear p").textContent=F_.key==="bi"?T("clear.bi"):T("clear.form");var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
+/* Confirm dialog before clearing. mode: "clear" (empty this form), "another" (empty a channel form to fill it again with
+   different information) or "newbi" (clear business information and every channel form, and restart from the beginning). */
+var pendingMode="clear";
+function askClear(F_,mode){pendingKey=F_.key;pendingMode=mode||"clear";
+ var m=pendingMode;$("#ct").textContent=T(m==="another"?"another.title":m==="newbi"?"newbi.title":"clear.title");
+ $("#clear p").textContent=m==="another"?T("another.text",{tab:tabName(F_.key)}):m==="newbi"?T("newbi.text"):F_.key==="bi"?T("clear.bi"):T("clear.form");
+ $("#cyes").textContent=m==="clear"?T("btn.clearForm"):T("another.go");var d=$("#clear");typeof d.showModal==="function"?d.showModal():d.setAttribute("open","");$("#cno").focus()}
 function closeDlg(d){d.close?d.close():d.removeAttribute("open")}
 $("#nbgo").addEventListener("click",function(){
  closeDlg($("#needbi"));setBICollapsed(false,true);var B=state.bi,bad=B.specs.filter(function(s){return check(s,get(B,s))!==""})[0],w=bad?wrapOf(B,bad):null;
@@ -346,7 +356,16 @@ $("#nbgo").addEventListener("click",function(){
 $("#needbi").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
 document.addEventListener("pi:needbi",needBI);
 $("#cno").addEventListener("click",function(){closeDlg($("#clear"))});
-$("#cyes").addEventListener("click",function(){var F_=state[pendingKey];closeDlg($("#clear"));if(F_){resetForm(F_);if(F_.key==="bi")gate();F_.box.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})}});
+/* Clear everything and restart: business information, every channel form, saved drafts and the "submitted" marks. */
+function fullReset(){
+ ORDER.forEach(function(k){resetForm(state[k])});resetForm(state.bi);
+ submitted={};try{sessionStorage.removeItem("pi_onboarding_done_v1")}catch(e){}try{localStorage.removeItem("pi_onboarding_tab_v1")}catch(e){}
+ gate();select(ORDER[0]);paint();window.scrollTo({top:0,behavior:reduce?"auto":"smooth"})}
+$("#cyes").addEventListener("click",function(){var F_=state[pendingKey],m=pendingMode;closeDlg($("#clear"));if(!F_)return;
+ if(m==="newbi"){fullReset();return}
+ resetForm(F_);
+ if(m==="another"){submitted[F_.key]=0;try{sessionStorage.setItem("pi_onboarding_done_v1",JSON.stringify(submitted))}catch(e){}paint()}
+ if(F_.key==="bi")gate();F_.box.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})});
 $("#clear").addEventListener("click",function(e){if(e.target===this)closeDlg(this)});
 
 /* ---------- Network helpers and loading overlay ---------- */
