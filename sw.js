@@ -13,7 +13,7 @@
    RELEASE CHECKLIST: when you publish a new version, change CACHE below to a new name AND the ?v= number in index.html.
    Old caches are deleted automatically.
    ===================================================================== */
-var CACHE = "pi-onboarding-v3.3.0";
+var CACHE = "pi-onboarding-v3.3.1";
 var NAV_TIMEOUT_MS = 3500;
 var CORE = ["./", "index.html", "styles.css", "config.js", "messages.js", "app.js"];
 
