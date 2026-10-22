@@ -40,13 +40,10 @@ sms:{tab:"SMS",color:"#ffb547",title:"SMS Onboarding Questionnaire",secs:[
  ["Messaging Requirements",[C("st","What type of SMS will be sent?",["Transactional","Promotional"])]],
  ["Sender ID (Header)",[F("sidt","Approved Transactional Sender ID(s)","text",{show:hasSms("Transactional"),full:1,raw:1,hint:"Sender ID(s) approved for transactional messages"}),F("sidp","Approved Promotional Sender ID(s)","text",{show:hasSms("Promotional"),full:1,raw:1,hint:"Sender ID(s) approved for promotional messages"})],["Sender IDs are case sensitive","Enter each Sender ID exactly as it is approved on the DLT platform, with the same capital and small letters. For example, PAYTMI and PaytmI are different Sender IDs. Separate more than one with commas."]]]},
 rcs:{tab:"RCS",color:"#6b95ff",title:"RCS Business Messaging Onboarding Questionnaire",secs:[
- ["Brand Information",[F("bn","Brand Name to be displayed on RCS"),F("ln","Legal Name of the Brand"),C("uc","Intended use case for RCS messaging",["Promotional","Transactional","OTP"]),F("an","Agent Name (Display Name)"),F("ad","Agent Description","textarea"),F("lg","Agent Logo","imglink",{kind:"logo",title:"Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)"}),F("hr","Hero Image / Banner","imglink",{kind:"hero",title:"Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)"}),F("bc","Brand Colors (Hex Code)","hex",{hint:"For example #00B9F5"})]],
- ["Contact Information",[F("cp","Customer Support Phone Number","tel"),F("cpl","Display Label for Phone Number"),F("ce","Customer Support Email","email"),F("cel","Display Label for Email"),F("cw","Business Website URL","url"),F("cwl","Display Label for Website")]],
- ["Customer Consent (Opt-in)",[F("cons","How do you obtain customer consent before sending RCS messages?","textarea")]],
- ["Privacy & Compliance",[F("pp","Privacy Policy URL","url"),F("tc","Terms & Conditions URL","url")]],
- ["Testing Requirements",[F("tn","Please provide 5-10 RCS-enabled mobile numbers for testing","phones",{hint:"Separate numbers with commas or new lines"}),F("go","Expected Go-Live Date","date")]],
- ["Fallback Channels",[R("f1","What should be the first fallback?",["WhatsApp","SMS","Fallback not needed"]),R("f2","What should be the second fallback?",["SMS","WhatsApp","Fallback not needed"])]],
- ["Commercial Information",[BILL]]]}
+ ["Brand Information",[F("bn","Brand Name to be displayed on RCS"),F("ln","Legal Name of the Brand"),C("uc","Intended use case for RCS messaging",["Promotional","Transactional"]),F("an","Agent Name (Display Name)"),F("ad","Agent Description","textarea",{max:100,hint:"Maximum 100 characters. You can paste your text here."}),F("lg","Agent Logo","imglink",{kind:"logo",title:"Agent Logo - link to file (share PNG/JPG over email or paste a link - 224 px x 224px under 50kb)"}),F("hr","Hero Image / Banner","imglink",{kind:"hero",title:"Hero Image / Banner - link to file ( 1440 × 448 pixels, under 200kb, 45:14 aspect ratio)"}),F("bc","Brand Colors (Hex Code)","hex",{hint:"Optional. For example #00B9F5",opt:1})]],
+ ["Contact Information",[F("cp","Customer Support Phone Number","tel"),F("ce","Customer Support Email","email"),F("cw","Business Website URL","url")]],
+ ["Customer Consent (Opt-in)",[F("cons","How do you obtain customer consent before sending RCS messages?","url",{full:1,hint:"Share a publicly accessible link (an image, a screen recording, or a page) that shows how customer consent is obtained."})]],
+ ["Privacy & Compliance",[F("pp","Privacy Policy URL","url"),F("tc","Terms & Conditions URL","url")]]]}
 };
 var ORDER=["whatsapp","sms","rcs"];
 /* Business information is entered once and sent with every channel. BI_MAP says which Google Form question each answer fills. */
@@ -65,6 +62,7 @@ var BI_MAP={
 var URLRE=/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/\S*)?$/i;
 function check(s,v){
  var empty=Array.isArray(v)?!v.length:!v;
+ if(empty&&s.opt)return"";
  if(empty)return s.type==="ack"?"Please confirm to continue.":s.type==="imglink"?(s._mode==="upload"?"Please upload a JPG or JPEG image.":"Paste an image link or upload a JPG or JPEG image."):s.type==="check"?"Select at least one option.":s.type==="radio"?"Please select an option.":s.type==="select"?"Please choose an option.":"This field is required.";
  switch(s.type){
   case"email":return/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)?"":"Enter a valid email address.";
@@ -80,6 +78,7 @@ function check(s,v){
  }
  if(s.type==="text"&&v.length<2)return"Enter at least 2 characters.";
  if(s.type==="textarea"&&v.length<5)return"Please provide a little more detail.";
+ if(s.max&&v.length>s.max)return"Please keep this to "+s.max+" characters or fewer.";
  return"";
 }
 
@@ -88,7 +87,7 @@ var tabs=$("#tabs"),panels=$("#panels"),state={},active="",unlocked=false,confir
 try{confirmed=localStorage.getItem(BIOK)==="1"}catch(e){}
 try{submitted=JSON.parse(sessionStorage.getItem("pi_onboarding_done_v1")||"{}")}catch(e){}
 function fieldHTML(key,s){
- var id=key+"-"+s.id,lab=esc(s.label)+'<span class="req" aria-hidden="true"> *</span>',
+ var id=key+"-"+s.id,lab=esc(s.label)+(s.opt?'<span class="optl"> (optional)</span>':'<span class="req" aria-hidden="true"> *</span>'),
   hint=s.hint?'<p class="hint" id="'+id+'-h">'+esc(s.hint)+'</p>':"",
   err='<p class="err" id="'+id+'-e" role="alert"></p>';
  if(s.type==="radio"||s.type==="check"){
@@ -111,7 +110,7 @@ function fieldHTML(key,s){
  var full=s.type==="textarea"||s.type==="phones"||s.full||s.label.length>58,
   dby=' aria-describedby="'+(s.hint?id+'-h ':"")+id+'-e"',ctl;
  if(s.type==="select")ctl='<select class="c" id="'+id+'" autocomplete="off" name="'+s.id+'"'+dby+'><option value="">Choose</option>'+s.opts.map(function(o){return'<option>'+esc(o)+'</option>'}).join("")+'</select>';
- else if(s.type==="textarea"||s.type==="phones")ctl='<textarea class="c" id="'+id+'" name="'+s.id+'" rows="4" maxlength="2000"'+dby+'></textarea>';
+ else if(s.type==="textarea"||s.type==="phones")ctl='<textarea class="c" id="'+id+'" name="'+s.id+'" rows="'+(s.max?3:4)+'" maxlength="'+(s.max||2000)+'"'+dby+'></textarea>'+(s.max?'<span class="cnt" data-cnt="'+s.max+'">0 / '+s.max+'</span>':"");
  else{
   var it=s.type==="email"?"email":s.type==="tel"?"tel":s.type==="date"?"date":"text",
    im=s.type==="url"?' inputmode="url"':s.type==="number"?' inputmode="numeric"':"",
@@ -310,7 +309,7 @@ function busy(on){var b=$("#busy"),sl=$("#bslow");if(!b)return;clearTimeout(busy
 /* ---------- Send to a Google Sheet (through the Apps Script web app) ---------- */
 function sheetRecord(F_){var rec={},B=state.bi,bm=BI_MAP[F_.key]||{};
  Object.keys(bm).forEach(function(id){var t=bm[id];rec[t==="emailAddress"?"Email Address":t]=get(B,B.by[id])});
- F_.specs.forEach(function(s){var on=vis(F_,s),v=on?get(F_,s):"N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});
+ F_.specs.forEach(function(s){var on=vis(F_,s),v=on?get(F_,s):"N/A";if(on&&s.opt&&!v)v="N/A";rec[norm(s.title||s.label)]=Array.isArray(v)?v.join(", "):v});
  (CFG.NA_ANSWERS&&CFG.NA_ANSWERS[F_.key]||[]).forEach(function(t){rec[norm(t)]=CFG.NA_VALUE||"N/A"});return rec}
 function sendSheet(F_){
  if(!CFG.SHEET_URL)return Promise.reject(new Error("config"));
@@ -331,6 +330,7 @@ function submit(F_,e){
  var p=new URLSearchParams(),miss=[];
  F_.specs.forEach(function(s){
   var shown=vis(F_,s),v=shown?get(F_,s):"N/A",key=F_.map[norm(s.title||s.label)];
+  if(shown&&s.opt&&!v)v="N/A";
   if(!shown&&s.type==="select"){if(!HIDDEN_SELECT_VALUE)return;v=HIDDEN_SELECT_VALUE}
   if(!key){miss.push(s.label);return}
   if(s.type==="date"){var d=v.split("-");p.append(key+"_year",d[0]);p.append(key+"_month",d[1]);p.append(key+"_day",d[2])}
@@ -405,4 +405,5 @@ document.querySelectorAll(".tn button").forEach(function(b){b.addEventListener("
   document.getElementById("wgo").focus();
  },500);
 })();
+document.addEventListener("input",function(e){var t=e.target,c=t&&t.nextElementSibling;if(c&&c.classList&&c.classList.contains("cnt"))c.textContent=t.value.length+" / "+c.dataset.cnt});
 })();
