@@ -18,7 +18,7 @@ function apply(){
 }
 apply();
 var codes=Object.keys(langs);
-if(codes.length>1){var bar=document.querySelector(".bar");if(bar){var sel=document.createElement("select");sel.className="langsel";sel.setAttribute("aria-label",T("lang.label"));
+if(codes.length>1){var bar=document.getElementById("langhost");if(bar){var sel=document.createElement("select");sel.className="langsel";sel.setAttribute("aria-label",T("lang.label"));
  codes.forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=langs[c].name||c;if(c===lang)o.selected=true;sel.appendChild(o)});
  sel.addEventListener("change",function(){try{localStorage.setItem("pi_lang_v1",sel.value)}catch(e){}var u=location.pathname+location.search.replace(/([?&])lang=[\w-]+&?/,"$1").replace(/[?&]$/,"")+location.hash;location.href=u});
  bar.appendChild(sel)}}
