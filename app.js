@@ -127,7 +127,7 @@ function fieldHTML(key,s){
   err='<p class="err" id="'+id+'-e" role="alert"></p>';
  if(s.type==="radio"||s.type==="check"){
   var t=s.type==="radio"?"radio":"checkbox";
-  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" autocomplete="off" name="'+s.id+'" value="'+esc(o)+'"><span>'+esc(opt(o))+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
+  return'<fieldset class="f full" data-id="'+s.id+'"><legend>'+lab+'</legend>'+hint+'<div class="opts'+(s.opts.length===2&&s.opts.every(function(o){return opt(o).length<=14})?" pair":"")+'">'+s.opts.map(function(o){return'<label class="opt"><input type="'+t+'" autocomplete="off" name="'+s.id+'" value="'+esc(o)+'"><span>'+esc(opt(o))+'</span></label>'}).join("")+'</div>'+err+'</fieldset>';
  }
 
  if(s.type==="imglink"){
