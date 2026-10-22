@@ -127,7 +127,7 @@ function fieldHTML(key,s){
   var ru=(CFG.IMAGE_RULES||{})[s.kind]||{},ht=T("img.hint.base")+(ru.width?T("img.hint.size",{w:ru.width,h:ru.height}):"")+(ru.maxKB?T("img.hint.kb",{kb:ru.maxKB}):"")+".";
   return'<div class="f full" data-id="'+s.id+'"><label for="'+id+'">'+lab+'</label><p class="hint" id="'+id+'-h">'+esc(ht)+'</p>'+
    '<div class="seg" role="group" aria-label="'+esc(T("img.source"))+'"><button type="button" class="on" data-m="link" aria-pressed="true">'+esc(T("img.paste"))+'</button><button type="button" data-m="upload" aria-pressed="false">'+esc(T("img.upload"))+'</button></div>'+
-   '<input class="c" id="'+id+'" name="'+s.id+'" type="text" inputmode="url" autocomplete="off" maxlength="300" placeholder="https://" aria-describedby="'+id+'-h '+id+'-e">'+
+   '<input class="c" id="'+id+'" name="'+s.id+'" type="text" inputmode="url" autocomplete="off" maxlength="300" placeholder="'+esc(T("ph.link"))+'" aria-describedby="'+id+'-h '+id+'-e">'+
    '<div class="up" hidden><label class="pick" for="'+id+'-f"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><span>'+esc(T("img.pick"))+'</span><input id="'+id+'-f" type="file" accept=".jpg,.jpeg,image/jpeg"></label>'+
    '<div class="fi" hidden><img alt="'+esc(T("img.previewAlt"))+'"><span class="fn"></span><button type="button" class="rm">'+esc(T("img.remove"))+'</button></div><p class="st" aria-live="polite"></p></div>'+err+'</div>';
  }
