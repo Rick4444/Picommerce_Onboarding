@@ -318,3 +318,6 @@ html{font-size:115%}.wrap{max-width:1480px}
 
 .tn button{padding-block:10px}.bi-toggle{padding-block:11px}
 .opt.ack input{z-index:1}
+
+/* No upload service configured: hide the Paste link / Upload image switch and the upload area, leaving only the link box. */
+.noup .seg,.noup .up{display:none!important}
