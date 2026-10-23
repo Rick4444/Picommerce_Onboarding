@@ -525,3 +525,9 @@ h1,h2,h3,h4{text-wrap:balance}p{text-wrap:pretty}
 
 /* an open help tip makes its question use the full row so the neighbouring field never gets pushed down */
 .grid>.f.helpopen{grid-column:1/-1}
+
+/* logo is a link: keep the look, add a gentle hover and a visible keyboard focus */
+a.logo{color:inherit;text-decoration:none;cursor:pointer;border-radius:14px;transition:transform .2s,opacity .2s}
+a.logo:hover{transform:translateY(-1px);opacity:.92}
+a.logo:active{transform:scale(.98)}
+a.logo:focus-visible{outline:3px solid rgba(0,185,245,.7);outline-offset:4px}
