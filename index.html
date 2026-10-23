@@ -27,10 +27,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3.6.0">
-<script src="config.js?v=3.6.0" defer></script>
-<script src="messages.js?v=3.6.0" defer></script>
-<script src="app.js?v=3.6.0" defer></script>
+<link rel="stylesheet" href="styles.css?v=3.6.1">
+<script src="config.js?v=3.6.1" defer></script>
+<script src="messages.js?v=3.6.1" defer></script>
+<script src="app.js?v=3.6.1" defer></script>
 </head>
 <body>
 <!-- Connection banner: shown by app.js when the device goes offline, comes back, or the network is slow. Text is filled from messages.js. -->
@@ -42,7 +42,8 @@
 <!-- Header: logo, channel menu, language switcher (added by app.js), welcome text and the animated Pi graphic -->
 <div class="band">
  <div class="wrap bar">
-  <div class="logo" id="logo" data-i18n-attr="aria-label:logo.alt" role="img"><span class="pi">Pi</span><span class="by"><span data-i18n="logo.by"></span> <b>PAYTM</b></span></div>
+  <!-- Logo links to the Pi website. Opens in a new tab so a customer never loses the form they are filling. Change the address here. -->
+  <a class="logo" id="logo" href="https://pi.global/" target="_blank" rel="noopener" data-i18n-attr="aria-label:logo.alt"><span class="pi">Pi</span><span class="by"><span data-i18n="logo.by"></span> <b>PAYTM</b></span></a>
   <div class="bar-r"><nav class="tn" data-i18n-attr="aria-label:nav.label"><button type="button" data-k="whatsapp" data-i18n="tab.whatsapp"></button><button type="button" data-k="sms" data-i18n="tab.sms"></button><button type="button" data-k="rcs" data-i18n="tab.rcs"></button></nav><span id="langhost"></span></div>
  </div>
  <div class="wrap g">
